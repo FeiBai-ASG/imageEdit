@@ -38,6 +38,7 @@ class ImageInfo {
     // if (heightLess > 0) {
     //   G.canvasGrandDom.style.paddingTop = heightLess / 2 + 'px'
     // }
+    console.log(canvasDom.width, canvasDom.height)
     G.canvasContext.drawImage(G.imgInstance, 0, 0, canvasDom.width, canvasDom.height)
     Util.addScaleEvent(canvasDom)
     Util.addTextEvent()

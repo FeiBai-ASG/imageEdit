@@ -13,8 +13,6 @@
         <div style="position: relative">
           <canvas
             id="picture_edit_canvas"
-            width="821"
-            height="1024"
             :style="{ width: cw, height: ch }"
           ></canvas>
         </div>
@@ -124,9 +122,16 @@ export default {
       const G = ped.pedGlobal
       this.cw = `${G.device._width + 'px'}`
       this.ch = `${Math.floor(G.device._width * G.img._WH) + 'px'}`
+      this.w = G.img._width
+      this.h = G.img._height
     },
     init () {
       this.$nextTick(() => {
+        const cnavasDom = document.getElementById('picture_edit_canvas')
+        cnavasDom.width = this.w
+        cnavasDom.height = this.h
+        console.log(cnavasDom)
+
         this.instance.loadImg()
       })
     }
@@ -135,9 +140,11 @@ export default {
   mounted () {
     const that = this
     const instance = new ped.ImageInfo({
-      url: 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=1729868871,2742990556&fm=26&gp=0.jpg',
-      saveFn () {
+    //   url: 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=1729868871,2742990556&fm=26&gp=0.jpg',
+      url: 'https://img2.baidu.com/it/u=3143062240,797042467&fm=26&fmt=auto&gp=0.jpg',
+      saveFn (res) {
         console.log('save')
+        console.log(res)
       },
       loaded () {
         console.log('loaded')
@@ -169,8 +176,8 @@ export default {
     float: right;
   }
   .btn-normal {
-    width: 200px;
-    height: 100px;
+    width: 100px;
+    height: 30px;
     background-color: #fff;
   }
   .clearfix {
@@ -187,7 +194,7 @@ export default {
     // overflow-scrolling: touch;
     -webkit-overflow-scrolling: touch;
     box-sizing: border-box;
-    padding-top: 100px;
+    // padding-top: 100px;
   }
 
   .bottom {

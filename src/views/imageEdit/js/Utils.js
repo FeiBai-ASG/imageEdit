@@ -35,6 +35,7 @@ function addScaleEvent (dom) {
   }, false)
 
   dom.addEventListener('touchmove', function (e) {
+    console.log('touchmove')
     if (e.touches.length === 2) {
       e.preventDefault()
       resetOperateOne()
@@ -196,6 +197,7 @@ function getDistance (p1, p2) {
 
 function resetImg () {
   G.canvasContext.clearRect(0, 0, G.img._width, G.img._height)
+  console.log(G.img._width, G.img._height)
   G.canvasContext.drawImage(G.imgInstance, 0, 0, G.img._width, G.img._height)
 }
 
@@ -207,7 +209,6 @@ function getScaleNum (oldTouches, newTouches) {
 
 function fixPadding () {
   const heightLess = G.boxSize._height - parseFloat(G.canvas.style.height)
-  debugger
   const widthLess = G.boxSize._width - parseFloat(G.canvas.style.width)
   if (heightLess > 0) {
     G.canvasGrandDom.style.paddingTop = (heightLess / 2).toFixed(4) + 'px'
