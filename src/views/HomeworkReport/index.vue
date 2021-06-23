@@ -181,7 +181,7 @@ export default {
     console.log({ classroom, handoutBind, studentId })
     this.setStudentInfo(studentId)
   },
-  method: {
+  methods: {
     getClassInfo (classroom) {
       console.log(classroom)
     },
@@ -195,6 +195,7 @@ export default {
       })
     }
   }
+
 }
 </script>
 
