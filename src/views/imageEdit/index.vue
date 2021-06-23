@@ -1,18 +1,16 @@
 <!--  -->
 <template>
   <div class="image-edit">
-    <div>
+    <!-- <div>
       <img :src="base64Img" alt="" />
-    </div>
+    </div> -->
 
     <div class="contanier">
-    <button @click="changeColor">changeColor</button>
-
       <div class="header clearfix">
-        <button class="float-l btn-normal" id="picture_edit_cancel">
+        <span class="float-l btn-normal" id="picture_edit_cancel">
           取消
-        </button>
-        <button class="float-r btn-normal" id="picture_edit_save">保存</button>
+        </span>
+        <span class="float-r btn-normal" id="picture_edit_save">保存</span>
       </div>
 
       <div class="content">
@@ -24,7 +22,10 @@
         </div>
       </div>
 
-      <div class="bottom">
+      <div class="bottom-area">
+        <BottomCom @changeColor="changeColor"></BottomCom>
+      </div>
+      <!-- <div class="bottom" style="display: none">
         <div
           style="flex: 1; padding-top: 1rem"
           class="picture-operate"
@@ -71,8 +72,7 @@
         </div>
 
         <div class="picture-operate" operate="5">旋转</div>
-
-      </div>
+      </div> -->
       <div
         id="picture_edit_text"
         style="
@@ -114,9 +114,13 @@
 
 <script>
 import ped from './js/index'
+import util from './utils/index'
+import BottomCom from './components/bottom.vue'
 
 export default {
-  components: {},
+  components: {
+    BottomCom
+  },
   data () {
     return {
       temp: '',
@@ -125,7 +129,8 @@ export default {
       ch: '',
       w: '',
       h: '',
-      base64Img: ''
+      base64Img: '',
+      actionList: []
     }
   },
   computed: {},
@@ -167,14 +172,17 @@ export default {
       })
     },
 
-    changeColor () {
+    changeColor (data) {
       const G = ped.pedGlobal
       console.log(G)
-      G.currentColor = 'yellow'
+      console.log(data.color)
+      G.currentColor = data.color
     }
   },
   created () {},
   mounted () {
+    console.log(util)
+    this.actionList = util.action
     const that = this
     const instance = new ped.ImageInfo({
       //   url: 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=1729868871,2742990556&fm=26&gp=0.jpg',
@@ -204,9 +212,17 @@ export default {
     bottom: 0;
     overflow: hidden;
     z-index: 997;
-    background-color: white;
+    background-color: #000;
   }
-
+  .header {
+        font-size: 32px;
+    color: #fff;
+    // background-color: #fff;
+    height: 100px;
+    box-sizing: border-box;
+    padding: 0 26px;
+    line-height: 100px;
+  }
   .float-l {
     float: left;
   }
@@ -214,9 +230,8 @@ export default {
     float: right;
   }
   .btn-normal {
-    width: 100px;
-    height: 30px;
-    background-color: #fff;
+    font-size: 32px;
+    color: #fff;
   }
   .clearfix {
     content: "";
@@ -245,6 +260,11 @@ export default {
     display: flex;
     text-align: center;
     color: white;
+  }
+  .bottom-area {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
   }
 }
 </style>

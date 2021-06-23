@@ -46,7 +46,7 @@ class ImageInfo {
     Util.addScaleEvent(canvasDom)
     Util.addTextEvent()
     // 给操作按钮添加事件
-    Util.addOperateEvent()
+    // Util.addOperateEvent()
     // 保存按钮事件添加
     Util.addSaveEvent(document.getElementById('picture_edit_save'), G.canvasContext, this.saveFn)
     // 取消按钮事件添加

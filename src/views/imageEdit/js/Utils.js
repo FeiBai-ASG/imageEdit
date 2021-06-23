@@ -174,6 +174,41 @@ function addOperateEvent () {
   })
 }
 
+function diffTypeAction (type) {
+  changeOperate(type)
+
+  if (type === 1) {
+
+  } else if (type === 2) {
+    G.textBox.style.display = 'block'
+    G.textInput.style.display = 'inline-block'
+    G.textInput.focus()
+    resetOperateOne()
+  } else if (type === 3) {
+    rotateCanvas()
+  } else if (type === 4) {
+    if (G.paintingArray.length > 0) {
+      resetImg()
+      const context = G.canvasContext
+      G.paintingArray.pop()
+      context.beginPath()
+      G.paintingArray.forEach((item) => {
+        context.moveTo(item.start.x, item.start.y)
+        item.moves.forEach(move => {
+          context.lineTo(move.x, move.y)
+        })
+      })
+      context.stroke()
+    }
+    resetOperateOne()
+  } else if (type === 5) { // 清空
+    resetImg()
+    clearInputDom()
+    G.paintingArray = []
+    resetOperateOne()
+  }
+}
+
 function addTextMoveEvent (dom) {
   const toucheXY = { x: 0, y: 0 }
   const oldCoordinate = { top: 0, left: 0 }
@@ -263,9 +298,9 @@ function getDistance (p1, p2) {
 function resetImg () {
   //   G.canvasContext.clearRect(0, 0, G.img._width, G.img._height)
   //   G.canvasContext.drawImage(G.imgInstance, 0, 0, G.img._width, G.img._height)
-//   const canvasDom = document.getElementById('picture_edit_canvas')
-//   G.canvasContext.clearRect(0, 0, canvasDom.width, canvasDom.height)
-//   G.canvasContext.drawImage(G.imgInstance, 0, 0, canvasDom.width, canvasDom.height)
+  //   const canvasDom = document.getElementById('picture_edit_canvas')
+  //   G.canvasContext.clearRect(0, 0, canvasDom.width, canvasDom.height)
+  //   G.canvasContext.drawImage(G.imgInstance, 0, 0, canvasDom.width, canvasDom.height)
   G.currentRoatteCnt--
   G.isRotated = !G.isRotated
   rotateCanvas()
@@ -397,7 +432,6 @@ function getTextScale (dom) {
 function rotateCanvas () {
   const canvasDom = document.getElementById('picture_edit_canvas')
   const ctx = G.canvasContext
-
   // 等比缩放图片 计算canvas以及图片宽高
   const cw = `${G.device._width}`
   const ch = `${G.device._height - 200 - 30}`
@@ -444,4 +478,4 @@ function rotateCanvas () {
   G.isRotated = !G.isRotated
 }
 
-export { createNode, addScaleEvent, addTextEvent, addOperateEvent, addSaveEvent, addCancelEvent }
+export { createNode, addScaleEvent, addTextEvent, addOperateEvent, addSaveEvent, addCancelEvent, diffTypeAction }
