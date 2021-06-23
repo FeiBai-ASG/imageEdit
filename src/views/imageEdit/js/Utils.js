@@ -403,6 +403,47 @@ function addSaveEvent (dom, cxt, saveFn) {
   }, false)
 }
 
+function saveImage (saveFn) {
+// const dom = document.getElementById('picture_edit_save')
+  const cxt = G.canvasContext
+  const array = G.inputArray
+  const padding = getCanvasPadding()
+  if (array.length > 0) {
+    for (let i = 0; i < array.length; i++) {
+      const item = G.inputDomArray[i]
+      const textScale = getTextScale(item)
+      // const domLeft = parseFloat(item.style.left) - padding
+      const domLeft = parseFloat(item.style.left) - padding
+
+      const domTop = parseFloat(item.style.top)
+      // let frontSize = parseFloat(item.style.fontSize) / parseFloat(G.canvas.style.height) * G.img._height
+      let fontSize = parseFloat(item.style.fontSize)
+
+      fontSize *= textScale
+      console.log(fontSize)
+      // drawRoundedRect(cxt, domLeft * scaleStyle, domTop, parseFloat(item.offsetWidth) * scaleStyle, parseFloat(item.offsetHeight) * scaleStyle, 5 * scaleStyle, true, false)
+      console.log('scaleStyle===', scaleStyle)
+      cxt.fillStyle = 'white'
+      cxt.fill()
+      for (let j = 0; j < array[i].length; j++) {
+        cxt.fillStyle = 'black'
+        cxt.font = `${fontSize}px helvetica`
+        // +5是为了修复paddingLeft     *1.4是为了修复line-height
+        cxt.fillText(array[i][j], (domLeft + 5) * scaleStyle, domTop + ((j) * (parseFloat(item.style.fontSize) * textScale * 1.4)) * scaleStyle + fontSize)
+        //   cxt.fillText(array[i][j], 0, fontSize)
+      }
+    }
+    // 画完后移除dom元素
+    clearInputDom()
+  }
+  const dataUrl = G.canvas.toDataURL()
+  saveFn(dataUrl)
+  G.pictureEditBox.style.display = 'none'
+  clearInputDom()
+  G.paintingArray = []
+  G.operateType = 0
+}
+
 function addCancelEvent (dom) {
   dom.addEventListener('click', function () {
     G.pictureEditBox.style.display = 'none'
@@ -492,4 +533,4 @@ function rotateCanvas () {
   G.isRotated = !G.isRotated
 }
 
-export { createNode, addScaleEvent, addTextEvent, addOperateEvent, addSaveEvent, addCancelEvent, diffTypeAction }
+export { createNode, addScaleEvent, addTextEvent, addOperateEvent, addSaveEvent, addCancelEvent, diffTypeAction, saveImage }

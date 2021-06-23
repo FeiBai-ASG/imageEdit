@@ -6,12 +6,9 @@
     </div> -->
 
     <div class="contanier">
-      <div>
-        <img src="./images/delete.png" class="delete-icon" alt="">
-      </div>
       <div class="header clearfix">
-        <span class="float-l btn-normal" id="picture_edit_cancel"> 取消 </span>
-        <span class="float-r btn-normal" id="picture_edit_save">保存</span>
+        <span @click="cancel" class="float-l btn-normal" id="picture_edit_cancel"> 取消 </span>
+        <span @click="save" class="float-r btn-normal" id="picture_edit_save">保存</span>
       </div>
 
       <div class="content">
@@ -90,6 +87,8 @@ import ped from './js/index'
 import util from './utils/index'
 import BottomCom from './components/bottom.vue'
 
+import { saveImage } from './js/Utils'
+
 export default {
   components: {
     BottomCom
@@ -154,6 +153,22 @@ export default {
       console.log(G)
       console.log(data.color)
       G.currentColor = data.color
+    },
+
+    save () {
+      saveImage(this.saveCb)
+    },
+    saveCb (res) {
+      console.log('saveCb', res)
+      this.wx.miniProgram.navigateBack({
+        delta: 1
+      })
+    },
+
+    cancel () {
+      this.wx.miniProgram.navigateBack({
+        delta: 1
+      })
     }
   },
   created () {},
@@ -164,11 +179,13 @@ export default {
     const instance = new ped.ImageInfo({
       //   url: 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=1729868871,2742990556&fm=26&gp=0.jpg',
       url: 'https://img2.baidu.com/it/u=3143062240,797042467&fm=26&fmt=auto&gp=0.jpg',
-      saveFn (res) {
-        console.log('save')
-        console.log(res)
-        that.base64Img = res
-      },
+      // saveFn (res) {
+      //   console.log('save')
+      //   console.log(res)
+      //   console.log(that.wx)
+
+      //   that.base64Img = res
+      // },
       loaded () {
         console.log('loaded')
         that.initCanvas()
@@ -194,7 +211,6 @@ export default {
   .header {
     font-size: 32px;
     color: #fff;
-    // background-color: #fff;
     height: 100px;
     box-sizing: border-box;
     padding: 0 26px;
