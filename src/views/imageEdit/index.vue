@@ -1,7 +1,13 @@
 <!--  -->
 <template>
   <div class="image-edit">
+    <div>
+      <img :src="base64Img" alt="" />
+    </div>
+
     <div class="contanier">
+    <button @click="changeColor">changeColor</button>
+
       <div class="header clearfix">
         <button class="float-l btn-normal" id="picture_edit_cancel">
           取消
@@ -13,7 +19,7 @@
         <div style="position: relative">
           <canvas
             id="picture_edit_canvas"
-            :style="{ width: cw, height: ch }"
+            :style="{ width: w + 'px', height: h + 'px' }"
           ></canvas>
         </div>
       </div>
@@ -40,6 +46,7 @@
           />
           文字
         </div>
+
         <div
           style="flex: 1; padding-top: 1rem"
           class="picture-operate"
@@ -62,6 +69,9 @@
           />
           清空
         </div>
+
+        <div class="picture-operate" operate="5">旋转</div>
+
       </div>
       <div
         id="picture_edit_text"
@@ -112,7 +122,10 @@ export default {
       temp: '',
       instance: null,
       cw: '',
-      ch: ''
+      ch: '',
+      w: '',
+      h: '',
+      base64Img: ''
     }
   },
   computed: {},
@@ -120,10 +133,28 @@ export default {
   methods: {
     initCanvas () {
       const G = ped.pedGlobal
-      this.cw = `${G.device._width + 'px'}`
-      this.ch = `${Math.floor(G.device._width * G.img._WH) + 'px'}`
-      this.w = G.img._width
-      this.h = G.img._height
+
+      this.cw = `${G.device._width}`
+      // this.ch = `${Math.min(Math.floor(G.device._width * G.img._WH), G.device._height)}`
+      this.ch = `${G.device._height - 200 - 30}`
+
+      let w, h
+      var w1 = this.cw
+      var h1 = this.ch
+      var w2 = G.img._width
+      var h2 = G.img._height
+      if (w1 / h1 > w2 / h2) {
+        w = (w2 * h1) / h2
+        h = h1
+      } else {
+        h = (h2 * w1) / w2
+        w = w1
+      }
+      console.log(w, h)
+      this.w = w
+      this.h = h
+      // this.w = G.img._width;
+      // this.h = G.img._height - 200;
     },
     init () {
       this.$nextTick(() => {
@@ -134,17 +165,24 @@ export default {
 
         this.instance.loadImg()
       })
+    },
+
+    changeColor () {
+      const G = ped.pedGlobal
+      console.log(G)
+      G.currentColor = 'yellow'
     }
   },
   created () {},
   mounted () {
     const that = this
     const instance = new ped.ImageInfo({
-    //   url: 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=1729868871,2742990556&fm=26&gp=0.jpg',
+      //   url: 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=1729868871,2742990556&fm=26&gp=0.jpg',
       url: 'https://img2.baidu.com/it/u=3143062240,797042467&fm=26&fmt=auto&gp=0.jpg',
       saveFn (res) {
         console.log('save')
         console.log(res)
+        that.base64Img = res
       },
       loaded () {
         console.log('loaded')

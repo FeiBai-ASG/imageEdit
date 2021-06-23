@@ -10,6 +10,7 @@ function createNode (txt, domType) {
 
 function addScaleEvent (dom) {
   const singleStartTouche = { x: 0, y: 0 }
+
   let doubleStartTouche = null
   let scale = 1
   scaleStyle = (dom.width / parseFloat(dom.style.width)).toFixed(4)
@@ -25,7 +26,9 @@ function addScaleEvent (dom) {
         setSingleCoordinate(singleStartTouche, e)
         context.beginPath()
         context.lineWidth = 5
-        const x = (e.touches[0].pageX - boxOffsetLeft - document.body.scrollLeft + G.canvasGrandDom.scrollLeft) * scaleStyle
+        // 计算canvas dom 偏移
+        const padding = getCanvasPadding()
+        const x = (e.touches[0].pageX - boxOffsetLeft - document.body.scrollLeft + G.canvasGrandDom.scrollLeft - padding) * scaleStyle
         const y = (e.touches[0].pageY - boxOffsetTop - document.body.scrollTop + G.canvasGrandDom.scrollTop) * scaleStyle
         context.moveTo(x, y)
         // 记录初始点坐标
@@ -35,7 +38,6 @@ function addScaleEvent (dom) {
   }, false)
 
   dom.addEventListener('touchmove', function (e) {
-    console.log('touchmove')
     if (e.touches.length === 2) {
       e.preventDefault()
       resetOperateOne()
@@ -62,14 +64,17 @@ function addScaleEvent (dom) {
     } else if (e.touches.length === 1) {
       if (G.operateType === 1) {
         e.preventDefault()
-        const x = parseFloat((e.touches[0].pageX - boxOffsetLeft - document.body.scrollLeft + G.canvasGrandDom.scrollLeft) * scaleStyle)
+        const padding = getCanvasPadding()
+        context.strokeStyle = G.currentColor
+        const x = parseFloat((e.touches[0].pageX - boxOffsetLeft - document.body.scrollLeft + G.canvasGrandDom.scrollLeft - padding) * scaleStyle)
         const y = parseFloat((e.touches[0].pageY - boxOffsetTop - document.body.scrollTop + G.canvasGrandDom.scrollTop) * scaleStyle)
         context.lineTo(x, y)
+
         context.stroke()
         // 记录初始的滑动位置
         setSingleCoordinate(singleStartTouche, e)
         const historyLength = G.paintingArray.length - 1
-        G.paintingArray[historyLength].moves.push({ x, y })
+        G.paintingArray[historyLength].moves.push({ x, y, color: G.currentColor })
       }
     }
   }, { passive: false })
@@ -83,10 +88,15 @@ function addTextEvent () {
     if (textArray.length > 0) {
       G.inputArray.push(textArray)
       if (G.textOperateIndex === 0) {
-        let textDom = `<div style="position: absolute;font-size: ${fontSize + 'px'};background-color: white;padding: 3px 5px;border-radius: 5px;white-space: nowrap">`
+        let textDom = `<div style="position: absolute;transform-origin: 0 0;font-size: ${fontSize + 'px'};background-color: white;padding: 3px 5px;border-radius: 5px;white-space: nowrap"><div style="position:relative">`
+
         for (let i = 0; i < textArray.length; i++) {
-          textDom = textDom + textArray[i] + `${i === textArray.length - 1 ? '' : '</br>'}`
+          //   textDom = textDom +  textArray[i] + `${i === textArray.length - 1 ? '' : '</br>'}`
+          textDom = textDom + `<span>${textArray[i]}</span>${i === textArray.length - 1 ? '' : '</br>'}`
         }
+        textDom += '<span style="position:absolute;bottom:-15px;right:-15px" id="drag">X</span>'
+        textDom += '</div>'
+
         textDom += '</div>'
         const dom = createNode(textDom)
         G.canvasParentDom.appendChild(dom)
@@ -96,6 +106,7 @@ function addTextEvent () {
         dom.style.top = (G.boxSize._height - domHeight) / 2 + G.canvasGrandDom.scrollTop - parseFloat(G.canvasGrandDom.style.paddingTop || 0) + 'px'
         dom.style.left = (G.boxSize._width - domWidth) / 2 + G.canvasGrandDom.scrollLeft - parseFloat(G.canvasGrandDom.style.paddingLeft || 0) + 'px'
         G.inputDomArray.push(dom)
+        addDragMoveEvent(dom)
         addTextMoveEvent(dom)
       }
       G.textIndex++
@@ -150,6 +161,12 @@ function addOperateEvent () {
           context.stroke()
         }
         resetOperateOne()
+      } else if (type === 5) {
+        rotateCanvas()
+        // console.log('rotate')
+        // const context = G.canvasContext
+        // console.log(context)
+        // context.rotate(45)
       }
     }, false)
   })
@@ -184,6 +201,52 @@ function addTextMoveEvent (dom) {
   }, false)
 }
 
+function addDragMoveEvent (dom) {
+  console.log(dom.childNodes)
+  console.log(dom)
+
+  let start = []
+  const toucheXY = { x: 0, y: 0 }
+  const oldCoordinate = { top: 0, left: 0 }
+  console.log(Array.prototype.slice.call(dom.childNodes))
+  const childNodes = Array.prototype.slice.call(Array.prototype.slice.call(dom.childNodes)[0].childNodes)
+  console.log(childNodes)
+  const dragDom = childNodes.find(item => item.id === 'drag')
+  console.log(dragDom)
+  dragDom.addEventListener('touchstart', function (e) {
+    e.preventDefault()
+    e.stopPropagation()
+    console.log(e.touches)
+    toucheXY.x = e.touches[0].pageX - document.body.scrollLeft
+    toucheXY.y = e.touches[0].pageY - document.body.scrollTop
+    oldCoordinate.top = parseFloat(dom.style.top)
+    oldCoordinate.left = parseFloat(dom.style.left)
+    start = e.touches // 得到第一组两个点
+  }, false)
+  dragDom.addEventListener('touchmove', function (e) {
+    e.preventDefault()
+    e.stopPropagation()
+    if (e.touches.length === 1) {
+      // 移动
+      var now = e.touches
+      console.log(now, start)
+
+      //   let domX = dom.style
+      var domX = dom.offsetLeft
+      var domY = dom.offsetTop
+      var domW = dom.offsetWidth
+      var domH = dom.offsetHeight
+      console.log(domX, domY, domW, domH)
+      const scaleX = (now[0].pageX - domX) / domW
+      const scaleY = (now[0].pageY - domY) / domH
+
+      dom.style.transform = `scale(${scaleX},${scaleY})`
+      //   dom.style.transformOrigin = '0 0'
+    } else if (e.touches.length === 2) {
+    }
+  }, false)
+}
+
 function setSingleCoordinate (init, e) {
   init.x = e.touches[0].pageX - document.body.scrollLeft
   init.y = e.touches[0].pageY - document.body.scrollTop
@@ -196,9 +259,11 @@ function getDistance (p1, p2) {
 }
 
 function resetImg () {
-  G.canvasContext.clearRect(0, 0, G.img._width, G.img._height)
-  console.log(G.img._width, G.img._height)
-  G.canvasContext.drawImage(G.imgInstance, 0, 0, G.img._width, G.img._height)
+  //   G.canvasContext.clearRect(0, 0, G.img._width, G.img._height)
+  //   G.canvasContext.drawImage(G.imgInstance, 0, 0, G.img._width, G.img._height)
+  const canvasDom = document.getElementById('picture_edit_canvas')
+  G.canvasContext.clearRect(0, 0, canvasDom.width, canvasDom.height)
+  G.canvasContext.drawImage(G.imgInstance, 0, 0, canvasDom.width, canvasDom.height)
 }
 
 function getScaleNum (oldTouches, newTouches) {
@@ -226,41 +291,50 @@ function fixPadding () {
   }
 }
 
-function drawRoundedRect (ctx, x, y, width, height, r, fill, stroke) {
-  ctx.save()
-  ctx.beginPath()
-  ctx.moveTo(x + r, y)
-  ctx.arcTo(x + width, y, x + width, y + r, r)
-  ctx.arcTo(x + width, y + height, x + width - r, y + height, r)
-  ctx.arcTo(x, y + height, x, y + height - r, r)
-  ctx.arcTo(x, y, x + r, y, r)
-  if (fill) {
-    ctx.fill()
-  }
-  if (stroke) {
-    ctx.stroke()
-  }
-  ctx.restore()
-}
+// function drawRoundedRect (ctx, x, y, width, height, r, fill, stroke) {
+//   ctx.save()
+//   ctx.beginPath()
+//   ctx.moveTo(x + r, y)
+//   ctx.arcTo(x + width, y, x + width, y + r, r)
+//   ctx.arcTo(x + width, y + height, x + width - r, y + height, r)
+//   ctx.arcTo(x, y + height, x, y + height - r, r)
+//   ctx.arcTo(x, y, x + r, y, r)
+//   if (fill) {
+//     ctx.fill()
+//   }
+//   if (stroke) {
+//     ctx.stroke()
+//   }
+//   ctx.restore()
+// }
 
 function addSaveEvent (dom, cxt, saveFn) {
   dom.addEventListener('click', function () {
     const array = G.inputArray
+    const padding = getCanvasPadding()
     if (array.length > 0) {
       for (let i = 0; i < array.length; i++) {
         const item = G.inputDomArray[i]
-        const domLeft = parseFloat(item.style.left)
-        const domTop = parseFloat(item.style.top) / parseFloat(G.canvas.style.height) * G.img._height
-        const frontSize = parseFloat(item.style.fontSize) / parseFloat(G.canvas.style.height) * G.img._height
-        drawRoundedRect(cxt, domLeft * scaleStyle, domTop, parseFloat(item.offsetWidth) * scaleStyle, parseFloat(item.offsetHeight) * scaleStyle, 5 * scaleStyle, true, false)
+        const textScale = getTextScale(item)
+        // const domLeft = parseFloat(item.style.left) - padding
+        const domLeft = parseFloat(item.style.left) - padding
+
+        const domTop = parseFloat(item.style.top)
+        // let frontSize = parseFloat(item.style.fontSize) / parseFloat(G.canvas.style.height) * G.img._height
+        let fontSize = parseFloat(item.style.fontSize)
+
+        fontSize *= textScale
+        console.log(fontSize)
+        // drawRoundedRect(cxt, domLeft * scaleStyle, domTop, parseFloat(item.offsetWidth) * scaleStyle, parseFloat(item.offsetHeight) * scaleStyle, 5 * scaleStyle, true, false)
         console.log('scaleStyle===', scaleStyle)
         cxt.fillStyle = 'white'
         cxt.fill()
         for (let j = 0; j < array[i].length; j++) {
           cxt.fillStyle = 'black'
-          cxt.font = `${frontSize}px helvetica`
+          cxt.font = `${fontSize}px helvetica`
           // +5是为了修复paddingLeft     *1.4是为了修复line-height
-          cxt.fillText(array[i][j], (domLeft + 5) * scaleStyle, domTop + ((j + 1) * (parseFloat(item.style.fontSize) * 1.4)) * scaleStyle)
+          cxt.fillText(array[i][j], (domLeft + 5) * scaleStyle, domTop + ((j) * (parseFloat(item.style.fontSize) * textScale * 1.4)) * scaleStyle + fontSize)
+          //   cxt.fillText(array[i][j], 0, fontSize)
         }
       }
       // 画完后移除dom元素
@@ -290,6 +364,63 @@ function clearInputDom () {
   })
   G.inputDomArray = []
   G.inputArray = []
+}
+
+function getCanvasPadding () {
+  const dom = document.getElementById('picture_edit_canvas')
+  const deviceW = G.device._width
+  let padding = (deviceW - dom.style.width.substring(0, dom.style.width.length - 2)) / 2
+  padding = padding < 0 ? 0 : padding
+  return padding
+}
+
+function getTextScale (dom) {
+  // eslint-disable-next-line no-useless-escape
+  const regex1 = /\([^\)]+\)/g
+  let transform = dom.style.transform.match(regex1)
+  let scale = 1
+  if (transform) {
+    transform = transform[0].substring(1, transform[0].length - 1)
+    const arr = transform.split(',')
+    const [x, y] = arr
+    scale = Math.max(x, y)
+  }
+  return scale
+}
+
+function rotateCanvas () {
+  const canvasDom = document.getElementById('picture_edit_canvas')
+  const ctx = G.canvasContext
+  //   ctx.clearRect(0, 0, canvasDom.width, canvasDom.height)
+  //   ctx.rotate(90)
+
+  //   G.canvasContext.drawImage(G.imgInstance, 0, 0, canvasDom.width, canvasDom.height)
+  //   ctx.rotate(-90)
+  const cw = `${G.device._width}`
+  // this.ch = `${Math.min(Math.floor(G.device._width * G.img._WH), G.device._height)}`
+  const ch = `${G.device._height - 200 - 30}`
+
+  let w, h
+  var w1 = cw
+  var h1 = ch
+  var w2 = G.img._height
+  var h2 = G.img._width
+  if (w1 / h1 > w2 / h2) {
+    w = (w2 * h1) / h2
+    h = h1
+  } else {
+    h = (h2 * w1) / w2
+    w = w1
+  }
+  console.log(w, h)
+  canvasDom.width = w
+  canvasDom.height = h
+  canvasDom.style.width = `${w}px`
+  canvasDom.style.height = `${h}px`
+  ctx.translate(w / 2, h / 2)
+  ctx.rotate(270 * Math.PI / 180)
+  ctx.drawImage(G.imgInstance, -w, -h, 2 * w, 2 * h)
+  ctx.translate(-w / 2, -h / 2)
 }
 
 export { createNode, addScaleEvent, addTextEvent, addOperateEvent, addSaveEvent, addCancelEvent }

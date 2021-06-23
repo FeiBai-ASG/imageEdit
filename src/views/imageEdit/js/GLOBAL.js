@@ -26,7 +26,8 @@ export const pedGlobal = {
   canvasGrandDom: null,
   pictureEditBox: null,
   canvasContext: {},
-  paintingArray: []
+  paintingArray: [],
+  currentColor: 'red'
 }
 
 export function changeOperate (type) {

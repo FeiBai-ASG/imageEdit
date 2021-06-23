@@ -18,6 +18,7 @@ class ImageInfo {
     img.src = url
 
     img.onload = function () {
+      console.log('image:', this.width, this.height)
       const globalImg = G.img
       globalImg._width = this.width
       globalImg._height = this.height
@@ -38,8 +39,10 @@ class ImageInfo {
     // if (heightLess > 0) {
     //   G.canvasGrandDom.style.paddingTop = heightLess / 2 + 'px'
     // }
-    console.log(canvasDom.width, canvasDom.height)
+    console.log('canvasDom:', canvasDom.width, canvasDom.height)
+
     G.canvasContext.drawImage(G.imgInstance, 0, 0, canvasDom.width, canvasDom.height)
+
     Util.addScaleEvent(canvasDom)
     Util.addTextEvent()
     // 给操作按钮添加事件
@@ -51,6 +54,7 @@ class ImageInfo {
   }
 
   getDeviceInfo () {
+    console.log('device:', document.documentElement.clientWidth, document.documentElement.clientHeight)
     G.device._width = document.documentElement.clientWidth
     G.device._height = document.documentElement.clientHeight
   }
@@ -59,37 +63,7 @@ class ImageInfo {
     if (document.getElementById('picture_edit_cancel')) {
       G.pictureEditBox.remove()
     }
-    // const operatingStyle = 'style="flex: 1;padding-top: 1rem" class=\'picture-operate\''
-    // const imgBox = '<div style="position: fixed;top: 0;left: 0;right: 0;bottom: 0;overflow: hidden;z-index: 997;background-color: white">' +
-    //                       '<div id="picture_edit_cancel" style="position: absolute;left: 15px;top: 15px;padding: 5px 13px;background-color: white;color: black;z-index: 2;border-radius: 3px">取消' +
-    //                       '</div>' +
-    //                       '<div id="picture_edit_save" style="position: absolute;right: 15px;top: 15px;padding: 5px 13px;background-color: #67c23a;color: white;z-index: 2;border-radius: 3px">保存' +
-    //                       '</div>' +
-    //                       '<div style="width: 100%;height:calc(100% - 6rem);overflow: scroll;-webkit-overflow-scrolling: touch;overflow-scrolling: touch;box-sizing: border-box">' +
-    //                          '<div style="position: relative">' +
-    //                           `<canvas id="picture_edit_canvas" width="${G.img._width}" height="${G.img._height}" style="width: ${G.device._width + 'px'};height: ${Math.floor(G.device._width * G.img._WH) + 'px'}"></canvas>` +
-    //                          '</div>' +
-    //                       '</div>' +
-    //                       '<div style="position: absolute;bottom: 0;left: 0;right: 0;height: 6rem;background-color: black;display: flex;text-align: center;color: white">' +
-    //                         `<div ${operatingStyle} operate="1">` +
-    //                             '<img src="./src/assets/image/painting.png" style="width: 1.3rem;display: block;margin: auto;">涂画' +
-    //                         '</div>' +
-    //                         `<div ${operatingStyle} operate="2">` +
-    //                             '<img src="./src/assets/image/text.png" style="width: 1.3rem;display: block;margin: auto"> 文字' +
-    //                         '</div>' +
-    //                         `<div ${operatingStyle} operate="3">` +
-    //                             '<img src="./src/assets/image/withdraw.png" style="width: 1.3rem;display: block;margin: auto"> 撤回' +
-    //                         '</div>' +
-    //                         `<div ${operatingStyle} operate="4">` +
-    //                             '<img src="./src/assets/image/empty.png" style="width: 1.3rem;display: block;margin: auto"> 清空' +
-    //                         '</div>' +
-    //                       '</div>' +
-    //                       '<div id="picture_edit_text" style="position: absolute;top: 0;left: 0;right: 0;bottom: 0;overflow: hidden;z-index: 2;display: none;background-color: white;opacity: 0.93">' +
-    //                       '</div>' +
-    //                       '<div id="picture_edit_input" contenteditable="true" tabindex="1" style="min-height:15%;border-radius: 5px;border: 2px solid #63eca1;outline: none;width: 96%;box-sizing: border-box;position: absolute;top: 8%;left: 2%;right: 2%;display: none;z-index: 2;padding: 3px 5px"></div>' +
-    //                   '</div>'
-    // const dom = Util.createNode(imgBox)
-    // document.body.appendChild(dom)
+
     const canvasDom = document.getElementById('picture_edit_canvas')
     const textBox = document.getElementById('picture_edit_text')
     const textInput = document.getElementById('picture_edit_input')
