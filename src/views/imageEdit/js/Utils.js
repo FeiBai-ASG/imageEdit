@@ -47,7 +47,9 @@ function addScaleEvent (dom) {
       const oldWidth = parseFloat(dom.style.width)
       const oldHeight = parseFloat(dom.style.height)
       const newWidth = (oldWidth * scale).toFixed(4)
-      const newHeight = parseFloat((oldWidth * G.img._WH).toFixed(4))
+      //   const newHeight = parseFloat((oldWidth * G.img._WH).toFixed(4))
+      const newHeight = parseFloat((oldHeight * scale).toFixed(4))
+
       dom.style.width = newWidth + 'px'
       dom.style.height = newHeight + 'px'
       scaleStyle = (dom.width / parseFloat(newWidth)).toFixed(4)
@@ -261,9 +263,12 @@ function getDistance (p1, p2) {
 function resetImg () {
   //   G.canvasContext.clearRect(0, 0, G.img._width, G.img._height)
   //   G.canvasContext.drawImage(G.imgInstance, 0, 0, G.img._width, G.img._height)
-  const canvasDom = document.getElementById('picture_edit_canvas')
-  G.canvasContext.clearRect(0, 0, canvasDom.width, canvasDom.height)
-  G.canvasContext.drawImage(G.imgInstance, 0, 0, canvasDom.width, canvasDom.height)
+//   const canvasDom = document.getElementById('picture_edit_canvas')
+//   G.canvasContext.clearRect(0, 0, canvasDom.width, canvasDom.height)
+//   G.canvasContext.drawImage(G.imgInstance, 0, 0, canvasDom.width, canvasDom.height)
+  G.currentRoatteCnt--
+  G.isRotated = !G.isRotated
+  rotateCanvas()
 }
 
 function getScaleNum (oldTouches, newTouches) {
@@ -388,23 +393,23 @@ function getTextScale (dom) {
   return scale
 }
 
+// 旋转事件
 function rotateCanvas () {
   const canvasDom = document.getElementById('picture_edit_canvas')
   const ctx = G.canvasContext
-  //   ctx.clearRect(0, 0, canvasDom.width, canvasDom.height)
-  //   ctx.rotate(90)
 
-  //   G.canvasContext.drawImage(G.imgInstance, 0, 0, canvasDom.width, canvasDom.height)
-  //   ctx.rotate(-90)
+  // 等比缩放图片 计算canvas以及图片宽高
   const cw = `${G.device._width}`
-  // this.ch = `${Math.min(Math.floor(G.device._width * G.img._WH), G.device._height)}`
   const ch = `${G.device._height - 200 - 30}`
-
   let w, h
   var w1 = cw
   var h1 = ch
-  var w2 = G.img._height
-  var h2 = G.img._width
+  var w2 = G.img._width
+  var h2 = G.img._height
+  if (!G.isRotated) { // 旋转 重置canvas宽高
+    w2 = G.img._height
+    h2 = G.img._width
+  }
   if (w1 / h1 > w2 / h2) {
     w = (w2 * h1) / h2
     h = h1
@@ -412,15 +417,31 @@ function rotateCanvas () {
     h = (h2 * w1) / w2
     w = w1
   }
-  console.log(w, h)
   canvasDom.width = w
   canvasDom.height = h
   canvasDom.style.width = `${w}px`
   canvasDom.style.height = `${h}px`
-  ctx.translate(w / 2, h / 2)
-  ctx.rotate(270 * Math.PI / 180)
-  ctx.drawImage(G.imgInstance, -w, -h, 2 * w, 2 * h)
-  ctx.translate(-w / 2, -h / 2)
+
+  // 旋转次数 判断角度
+  G.currentRoatteCnt++
+  const cnt = Number(G.currentRoatteCnt % 4)
+  const angel = cnt * 90 * Math.PI / 180
+
+  // 90 180 270 区别是旋转中心偏移量不同 以及绘制图片宽高
+  if (cnt === 1 || cnt === 3 || cnt === 2) {
+    ctx.translate(w / 2, h / 2)
+    ctx.rotate(angel)
+    const offsetX = cnt === 2 ? -w / 2 : -h / 2
+    const offsetY = cnt === 2 ? -h / 2 : -w / 2
+    const imgW = cnt === 2 ? w : h
+    const imgH = cnt === 2 ? h : w
+    ctx.drawImage(G.imgInstance, offsetX, offsetY, imgW, imgH)
+    ctx.rotate(-angel)
+    ctx.translate(-w / 2, -h / 2)
+  } else { // 初始状态
+    ctx.drawImage(G.imgInstance, 0, 0, w, h)
+  }
+  G.isRotated = !G.isRotated
 }
 
 export { createNode, addScaleEvent, addTextEvent, addOperateEvent, addSaveEvent, addCancelEvent }

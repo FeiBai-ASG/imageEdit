@@ -27,7 +27,9 @@ export const pedGlobal = {
   pictureEditBox: null,
   canvasContext: {},
   paintingArray: [],
-  currentColor: 'red'
+  currentColor: 'red',
+  currentRoatteCnt: 0,
+  isRotated: false
 }
 
 export function changeOperate (type) {
