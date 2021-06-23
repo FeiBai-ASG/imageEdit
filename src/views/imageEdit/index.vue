@@ -6,10 +6,11 @@
     </div> -->
 
     <div class="contanier">
+      <div>
+        <img src="./images/delete.png" class="delete-icon" alt="">
+      </div>
       <div class="header clearfix">
-        <span class="float-l btn-normal" id="picture_edit_cancel">
-          取消
-        </span>
+        <span class="float-l btn-normal" id="picture_edit_cancel"> 取消 </span>
         <span class="float-r btn-normal" id="picture_edit_save">保存</span>
       </div>
 
@@ -73,40 +74,12 @@
 
         <div class="picture-operate" operate="5">旋转</div>
       </div> -->
-      <div
-        id="picture_edit_text"
-        style="
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          overflow: hidden;
-          z-index: 2;
-          display: none;
-          background-color: white;
-          opacity: 0.93;
-        "
-      ></div>
+      <div id="picture_edit_text" class="edit-text"></div>
       <div
         id="picture_edit_input"
         contenteditable="true"
-        tabindex="1"
-        style="
-          min-height: 15%;
-          border-radius: 5px;
-          border: 2px solid #63eca1;
-          outline: none;
-          width: 96%;
-          box-sizing: border-box;
-          position: absolute;
-          top: 8%;
-          left: 2%;
-          right: 2%;
-          display: none;
-          z-index: 2;
-          padding: 3px 5px;
-        "
+        class="edit-text-input"
+        :style="{color: G.currentColor}"
       ></div>
     </div>
   </div>
@@ -130,7 +103,10 @@ export default {
       w: '',
       h: '',
       base64Img: '',
-      actionList: []
+      actionList: [],
+      G: {
+        currentColor: 'red'
+      }
     }
   },
   computed: {},
@@ -138,6 +114,7 @@ export default {
   methods: {
     initCanvas () {
       const G = ped.pedGlobal
+      this.G = G
 
       this.cw = `${G.device._width}`
       // this.ch = `${Math.min(Math.floor(G.device._width * G.img._WH), G.device._height)}`
@@ -215,7 +192,7 @@ export default {
     background-color: #000;
   }
   .header {
-        font-size: 32px;
+    font-size: 32px;
     color: #fff;
     // background-color: #fff;
     height: 100px;
@@ -265,6 +242,43 @@ export default {
     position: fixed;
     bottom: 0;
     width: 100%;
+  }
+
+  .edit-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    z-index: 2;
+    display: none;
+    background-color: rgba(45, 43, 43, 0.62);
+  }
+  .edit-text-input {
+    width: 538px;
+    // height: 208px;
+    border: 2px solid #ffffff;
+    min-height: 208px;
+    border-radius: 5px;
+    outline: none;
+    box-sizing: border-box;
+    position: absolute;
+    top: 242px;
+    left: 106px;
+    right: 106px;
+    display: none;
+    z-index: 2;
+    padding: 24px 52px;
+    color: #f80e0f;
+    font-size: 52px;
+  }
+  .delete-icon {
+    width: 36px;
+    height: 36px;
+    position: absolute;
+    top: -15px;
+    left: -15px;
   }
 }
 </style>

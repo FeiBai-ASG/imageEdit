@@ -64,10 +64,12 @@ export default {
       if (type === 1) {
         this.actions[0].picked = true
         this.actions[1].picked = false
-      }
-      if (type === 2) {
+      } else if (type === 2) {
         this.actions[0].picked = false
         this.actions[1].picked = true
+      } else {
+        this.actions[0].picked = false
+        this.actions[1].picked = false
       }
       diffTypeAction(type)
     }

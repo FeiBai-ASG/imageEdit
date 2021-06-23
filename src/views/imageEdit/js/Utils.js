@@ -1,4 +1,5 @@
 import { pedGlobal as G, changeOperate } from './GLOBAL'
+import deleteIcon from '../images/delete.png'
 
 let scaleStyle = 0
 function createNode (txt, domType) {
@@ -90,13 +91,25 @@ function addTextEvent () {
     if (textArray.length > 0) {
       G.inputArray.push(textArray)
       if (G.textOperateIndex === 0) {
-        let textDom = `<div style="position: absolute;transform-origin: 0 0;font-size: ${fontSize + 'px'};background-color: white;padding: 3px 5px;border-radius: 5px;white-space: nowrap"><div style="position:relative">`
+        let textDom = `<div 
+        style="position: absolute;
+        transform-origin: 0 0;
+        font-size: ${fontSize + 'px'};
+        padding: 12px 26px;
+        border: 1px solid ${G.currentColor};
+        color: ${G.currentColor};
+        white-space: nowrap">
+        <div style="position:relative">`
 
         for (let i = 0; i < textArray.length; i++) {
           //   textDom = textDom +  textArray[i] + `${i === textArray.length - 1 ? '' : '</br>'}`
           textDom = textDom + `<span>${textArray[i]}</span>${i === textArray.length - 1 ? '' : '</br>'}`
         }
-        textDom += '<span style="position:absolute;bottom:-15px;right:-15px" id="drag">X</span>'
+        textDom += `<img src="${deleteIcon}" style="  width: 18px;
+        height: 18px;
+        position: absolute;
+        top: -20px;
+        left: -36px;" class="delete-icon" id="delete"></img>`
         textDom += '</div>'
 
         textDom += '</div>'
@@ -108,7 +121,7 @@ function addTextEvent () {
         dom.style.top = (G.boxSize._height - domHeight) / 2 + G.canvasGrandDom.scrollTop - parseFloat(G.canvasGrandDom.style.paddingTop || 0) + 'px'
         dom.style.left = (G.boxSize._width - domWidth) / 2 + G.canvasGrandDom.scrollLeft - parseFloat(G.canvasGrandDom.style.paddingLeft || 0) + 'px'
         G.inputDomArray.push(dom)
-        addDragMoveEvent(dom)
+        // addDragMoveEvent(dom)
         addTextMoveEvent(dom)
       }
       G.textIndex++
@@ -120,12 +133,11 @@ function addTextEvent () {
 }
 
 function resetOperateOne () {
-  const operate = [...document.querySelectorAll('.picture-operate')][0]
-  console.log(operate.style.color)
-  if (operate.style.color === 'rgb(69, 148, 248)') {
-    operate.firstChild.src = './src/assets/image/painting.png'
-    operate.style.color = 'white'
-  }
+//   const operate = [...document.querySelectorAll('.picture-operate')][0]
+//   if (operate.style.color === 'rgb(69, 148, 248)') {
+//     operate.firstChild.src = './src/assets/image/painting.png'
+//     operate.style.color = 'white'
+//   }
 }
 
 function addOperateEvent () {
@@ -183,6 +195,7 @@ function diffTypeAction (type) {
     G.textBox.style.display = 'block'
     G.textInput.style.display = 'inline-block'
     G.textInput.focus()
+    document.execCommand('justifyLeft')
     resetOperateOne()
   } else if (type === 3) {
     rotateCanvas()
@@ -238,51 +251,52 @@ function addTextMoveEvent (dom) {
   }, false)
 }
 
-function addDragMoveEvent (dom) {
-  console.log(dom.childNodes)
-  console.log(dom)
+// 文本框缩放 这期不上
+// function addDragMoveEvent (dom) {
+//   console.log(dom.childNodes)
+//   console.log(dom)
 
-  let start = []
-  const toucheXY = { x: 0, y: 0 }
-  const oldCoordinate = { top: 0, left: 0 }
-  console.log(Array.prototype.slice.call(dom.childNodes))
-  const childNodes = Array.prototype.slice.call(Array.prototype.slice.call(dom.childNodes)[0].childNodes)
-  console.log(childNodes)
-  const dragDom = childNodes.find(item => item.id === 'drag')
-  console.log(dragDom)
-  dragDom.addEventListener('touchstart', function (e) {
-    e.preventDefault()
-    e.stopPropagation()
-    console.log(e.touches)
-    toucheXY.x = e.touches[0].pageX - document.body.scrollLeft
-    toucheXY.y = e.touches[0].pageY - document.body.scrollTop
-    oldCoordinate.top = parseFloat(dom.style.top)
-    oldCoordinate.left = parseFloat(dom.style.left)
-    start = e.touches // 得到第一组两个点
-  }, false)
-  dragDom.addEventListener('touchmove', function (e) {
-    e.preventDefault()
-    e.stopPropagation()
-    if (e.touches.length === 1) {
-      // 移动
-      var now = e.touches
-      console.log(now, start)
+//   let start = []
+//   const toucheXY = { x: 0, y: 0 }
+//   const oldCoordinate = { top: 0, left: 0 }
+//   console.log(Array.prototype.slice.call(dom.childNodes))
+//   const childNodes = Array.prototype.slice.call(Array.prototype.slice.call(dom.childNodes)[0].childNodes)
+//   console.log(childNodes)
+//   const dragDom = childNodes.find(item => item.id === 'drag')
+//   console.log(dragDom)
+//   dragDom.addEventListener('touchstart', function (e) {
+//     e.preventDefault()
+//     e.stopPropagation()
+//     console.log(e.touches)
+//     toucheXY.x = e.touches[0].pageX - document.body.scrollLeft
+//     toucheXY.y = e.touches[0].pageY - document.body.scrollTop
+//     oldCoordinate.top = parseFloat(dom.style.top)
+//     oldCoordinate.left = parseFloat(dom.style.left)
+//     start = e.touches // 得到第一组两个点
+//   }, false)
+//   dragDom.addEventListener('touchmove', function (e) {
+//     e.preventDefault()
+//     e.stopPropagation()
+//     if (e.touches.length === 1) {
+//       // 移动
+//       var now = e.touches
+//       console.log(now, start)
 
-      //   let domX = dom.style
-      var domX = dom.offsetLeft
-      var domY = dom.offsetTop
-      var domW = dom.offsetWidth
-      var domH = dom.offsetHeight
-      console.log(domX, domY, domW, domH)
-      const scaleX = (now[0].pageX - domX) / domW
-      const scaleY = (now[0].pageY - domY) / domH
+//       //   let domX = dom.style
+//       var domX = dom.offsetLeft
+//       var domY = dom.offsetTop
+//       var domW = dom.offsetWidth
+//       var domH = dom.offsetHeight
+//       console.log(domX, domY, domW, domH)
+//       const scaleX = (now[0].pageX - domX) / domW
+//       const scaleY = (now[0].pageY - domY) / domH
 
-      dom.style.transform = `scale(${scaleX},${scaleY})`
-      //   dom.style.transformOrigin = '0 0'
-    } else if (e.touches.length === 2) {
-    }
-  }, false)
-}
+//       dom.style.transform = `scale(${scaleX},${scaleY})`
+//       //   dom.style.transformOrigin = '0 0'
+//     } else if (e.touches.length === 2) {
+//     }
+//   }, false)
+// }
 
 function setSingleCoordinate (init, e) {
   init.x = e.touches[0].pageX - document.body.scrollLeft
