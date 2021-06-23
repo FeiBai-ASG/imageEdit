@@ -109,6 +109,7 @@ function addTextEvent () {
         height: 18px;
         position: absolute;
         top: -20px;
+        z-index: 999;
         left: -36px;" class="delete-icon" id="delete"></img>`
         textDom += '</div>'
 
@@ -123,6 +124,7 @@ function addTextEvent () {
         G.inputDomArray.push(dom)
         // addDragMoveEvent(dom)
         addTextMoveEvent(dom)
+        addDeleteEvent(dom)
       }
       G.textIndex++
     }
@@ -130,6 +132,15 @@ function addTextEvent () {
     G.textBox.style.display = 'none'
     G.textInput.style.display = 'none'
   })
+}
+
+function addDeleteEvent (dom) {
+  const deleteImgDom = dom.childNodes[1].childNodes[1]
+  console.log(deleteImgDom)
+  deleteImgDom.addEventListener('click', function (e) {
+    e.preventDefault()
+    dom.remove()
+  }, false)
 }
 
 function resetOperateOne () {
@@ -226,7 +237,7 @@ function addTextMoveEvent (dom) {
   const toucheXY = { x: 0, y: 0 }
   const oldCoordinate = { top: 0, left: 0 }
   dom.addEventListener('touchstart', function (e) {
-    e.preventDefault()
+    // e.preventDefault()
     toucheXY.x = e.touches[0].pageX - document.body.scrollLeft
     toucheXY.y = e.touches[0].pageY - document.body.scrollTop
     oldCoordinate.top = parseFloat(dom.style.top)
