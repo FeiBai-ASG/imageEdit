@@ -5,12 +5,18 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "build--report": "vue-cli-service build --report",
+    "build--staging": "vue-cli-service build --mode staging",
+    "lint": "vue-cli-service lint",
+    "lint --fix": "vue-cli-service lint --fix"
   },
   "dependencies": {
+    "axios": "^0.21.1",
     "chalk": "^4.1.1",
     "core-js": "^3.6.5",
+    "js-base64": "^3.6.1",
     "postcss-pxtorem": "^5.1.1",
+    "qs": "^6.10.1",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
     "weixin-js-sdk": "^1.6.0"
