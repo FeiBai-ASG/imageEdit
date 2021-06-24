@@ -12,7 +12,7 @@
       </div>
 
       <div class="content">
-        <div style="position: relative;display:flex;justify-content:center">
+        <div style="position: relative;">
           <canvas
             id="picture_edit_canvas"
             :style="{ width: w + 'px', height: h + 'px' }"
