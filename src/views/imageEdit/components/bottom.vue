@@ -22,12 +22,12 @@
     <div class="actions">
       <div v-for="item in actions" :key="item.text">
         <div class="action" @click="changeAction(item)">
-          <div>
+          <div class="img-wrapper">
             <img v-if="!item.picked" class="action-icon" :src="item.src" alt="" />
             <img v-else class="action-icon" :src="item.active" alt="" />
 
           </div>
-          <div>{{ item.text }}</div>
+          <div class="action-text">{{ item.text }}</div>
 
         </div>
       </div>
@@ -105,21 +105,30 @@ export default {
   .icon-wrapper {
       width:100%;
       height: 100%;
+      display: flex;
+    justify-content: center;
   }
   .icon {
     width: 32px;
     height: 32px;
     margin-top: 16px;
   }
+    .img-wrapper {
+        display: flex;
+        justify-content: center;
+    }
   .actions {
     display: flex;
     justify-content: space-between;
-      margin-top: 66px;
+    margin-top: 66px;
     padding: 0 22px;
   }
   .action-icon {
       width: 36px;
       height: 36px;
+  }
+  .action-text {
+      margin-top: 9px;
   }
 }
 </style>

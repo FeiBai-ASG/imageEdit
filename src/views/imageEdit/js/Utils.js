@@ -50,7 +50,6 @@ function addScaleEvent (dom) {
       const newWidth = (oldWidth * scale).toFixed(4)
       //   const newHeight = parseFloat((oldWidth * G.img._WH).toFixed(4))
       const newHeight = parseFloat((oldHeight * scale).toFixed(4))
-
       dom.style.width = newWidth + 'px'
       dom.style.height = newHeight + 'px'
       scaleStyle = (dom.width / parseFloat(newWidth)).toFixed(4)
@@ -473,11 +472,12 @@ function clearInputDom () {
 }
 
 function getCanvasPadding () {
-  const dom = document.getElementById('picture_edit_canvas')
-  const deviceW = G.device._width
-  let padding = (deviceW - dom.style.width.substring(0, dom.style.width.length - 2)) / 2
-  padding = padding < 0 ? 0 : padding
-  return padding
+  return 0
+  // const dom = document.getElementById('picture_edit_canvas')
+  // const deviceW = G.device._width
+  // let padding = (deviceW - dom.style.width.substring(0, dom.style.width.length - 2)) / 2
+  // padding = padding < 0 ? 0 : padding
+  // return padding
 }
 
 function getTextScale (dom) {
