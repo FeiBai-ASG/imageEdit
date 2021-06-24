@@ -201,7 +201,7 @@
             </div>
             <div class="review">
               <div class="review-text" v-if="homeworkRevision.feedback">
-                点评：{{homeworkRevision.feedback}}
+                点评：{{ homeworkRevision.feedback }}
               </div>
               <div
                 class="review-image"
@@ -221,6 +221,7 @@
           </div>
         </template>
       </div>
+      <div class="button" @click="goHomeworkAnswer">查看作业解析</div>
       <div class="conent-bottom" style="height: 35px"></div>
     </div>
   </div>
@@ -246,6 +247,8 @@ export default {
         choice: {},
         fill: {}
       },
+      classroomId: '',
+      studentId: '',
       studentName: ''
     }
   },
@@ -253,6 +256,8 @@ export default {
     const { classroom, handoutBind, studentId } = this.$route.query
     this.handoutName = handoutBind
     console.log({ classroom, handoutBind, studentId })
+    this.studentId = studentId
+    this.classroomId = classroom
     this.setStudentInfo(studentId)
     this.setClassInfo(classroom)
     this.setHomeworkInfo(classroom, studentId)
@@ -325,6 +330,17 @@ export default {
 
           console.log(homeworkCorrection)
         })
+    },
+    goHomeworkAnswer () {
+      const url =
+        'pages/EntranceAnalysis/EntranceAnalysis?classroom=' +
+        this.classroomId +
+        '&type=2&student=' +
+        this.studentId +
+        '&is_can=1'
+      this.wx.miniProgram.navigateTo({
+        url
+      })
     }
   }
 }
@@ -590,5 +606,16 @@ export default {
     margin-top: 36px;
     margin-left: 26px;
   }
+}
+.button {
+  width: 600px;
+  height: 88px;
+  background: #5e4cf9;
+  border-radius: 88px;
+  font-size: 32px;
+  font-weight: 400;
+  color: #ffffff;
+  line-height: 88px;
+  text-align: center;
 }
 </style>
