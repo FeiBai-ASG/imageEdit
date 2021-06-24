@@ -347,7 +347,7 @@ export default {
     },
     goHomeworkAnswer () {
       const url =
-        'pages/EntranceAnalysis/EntranceAnalysis?classroom=' +
+        '/pages/EntranceAnalysis/EntranceAnalysis?classroom=' +
         this.classroomId +
         '&type=2&student=' +
         this.studentId +
