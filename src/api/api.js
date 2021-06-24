@@ -3,6 +3,7 @@ import axios from '@/api/http'
 
 const baseURL_ERP = process.env.VUE_APP_API_URL_ERP
 const baseURL_TMS = process.env.VUE_APP_API_URL_TMS
+const baseURL_TRMS = process.env.VUE_APP_API_URL_TRMS
 
 const api = {
   // 获取学员列表
@@ -34,6 +35,13 @@ const api = {
   getHomeworkCorrectionForStu (params) {
     return axios.post(
       `${baseURL_TMS}/HomeworkRevision/getHomeworkCorrectionForStu`,
+      params
+    )
+  },
+  // 获取绑定的讲义
+  getBindInfo (params) {
+    return axios.post(
+      `${baseURL_TRMS}/HandoutBind/getBindInfo`,
       params
     )
   }
