@@ -24,7 +24,13 @@
             <div class="homework-time-title">提交作业时间</div>
             <div class="homework-time-text">2020-03-03 18:09:09</div>
           </div>
-          <div class="homework-choice">
+          <div
+            class="homework-choice"
+            v-if="
+              homeworkCorrection.choiceQuestion &&
+                homeworkCorrection.choiceQuestion.length
+            "
+          >
             <div class="homework-choice-title">
               <div class="homework-choice-title-text">选择题</div>
               <div class="homework-choice-title-key">
@@ -121,7 +127,7 @@
           </div>
         </template>
       </div>
-      <div class="content-homework correct">
+      <div class="content-homework correct" v-if="homeworkRevision.submitTime">
         <div class="correct-title">作业订正</div>
         <div class="homework-answer">
           <div class="homework-time">
@@ -130,7 +136,13 @@
               {{ homeworkRevision.submitTime }}
             </div>
           </div>
-          <div class="homework-choice">
+          <div
+            class="homework-choice"
+            v-if="
+              homeworkRevision.choiceQuestion &&
+                homeworkRevision.choiceQuestion.length
+            "
+          >
             <div class="homework-choice-title">
               <div class="homework-choice-title-text">选择题</div>
               <div class="homework-choice-title-key">
@@ -165,16 +177,15 @@
               </div>
             </div>
           </div>
-          <div class="homework-fill">
-            <div class="homework-fill-title">非选择题</div>
             <div
-              class="homework-fill-answer"
+            class="homework-fill"
               v-if="
                 homeworkRevision.revisionPics &&
                   homeworkRevision.revisionPics.length
               "
-              v-viewer
             >
+            <div class="homework-fill-title">非选择题</div>
+            <div class="homework-fill-answer" v-viewer>
               <img
                 class="answer-item"
                 v-for="item in homeworkRevision.revisionPics"
