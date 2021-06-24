@@ -77,7 +77,7 @@
             </div>
           </div>
         </div>
-        <block
+        <template
           v-if="
             (homeworkCorrection.correctionPics &&
               homeworkCorrection.correctionPics.length) ||
@@ -118,7 +118,7 @@
               </div>
             </div>
           </div>
-        </block>
+        </template>
       </div>
       <div class="content-homework correct">
         <div class="correct-title">作业订正</div>
@@ -182,7 +182,7 @@
             </div>
           </div>
         </div>
-        <block
+        <template
           v-if="
             (homeworkRevision.correctionPics &&
               homeworkRevision.correctionPics.length) ||
@@ -219,7 +219,7 @@
               </div>
             </div>
           </div>
-        </block>
+        </template>
       </div>
       <div class="conent-bottom" style="height: 35px"></div>
     </div>
