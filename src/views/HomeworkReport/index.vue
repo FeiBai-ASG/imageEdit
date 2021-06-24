@@ -177,13 +177,13 @@
               </div>
             </div>
           </div>
-            <div
+          <div
             class="homework-fill"
-              v-if="
-                homeworkRevision.revisionPics &&
-                  homeworkRevision.revisionPics.length
-              "
-            >
+            v-if="
+              homeworkRevision.revisionPics &&
+                homeworkRevision.revisionPics.length
+            "
+          >
             <div class="homework-fill-title">非选择题</div>
             <div class="homework-fill-answer" v-viewer>
               <img
@@ -267,13 +267,13 @@ export default {
     }
   },
   created () {
-    const { classroom, handoutBind, studentId } = this.$route.query
-    this.handoutName = handoutBind
-    console.log({ classroom, handoutBind, studentId })
+    const { classroom, studentId } = this.$route.query
+    console.log({ classroom, studentId })
     this.studentId = studentId
     this.classroomId = classroom
     this.setStudentInfo(studentId)
     this.setClassInfo(classroom)
+    this.setHandoutInfo(classroom)
     this.setHomeworkInfo(classroom, studentId)
   },
   methods: {
@@ -305,6 +305,18 @@ export default {
               }
               console.log(teacherList)
             })
+        }
+      })
+    },
+    setHandoutInfo (classroom) {
+      this.$api.getBindInfo({ classroom }).then(handoutList => {
+        const handoutInfo = handoutList[0]
+        if (handoutInfo) {
+          this.handoutName =
+            '第 ' +
+            (Number(handoutInfo.handout_sort) + 1) +
+            ' 讲 ' +
+            handoutInfo.handout_name
         }
       })
     },
@@ -546,11 +558,6 @@ export default {
     }
     .homework-review {
       padding: 28px 20px 32px 20px;
-      // &::before {
-      //   width: 630px;
-      //   height: 2px;
-      //   background-image: url("/src/assets/image/zyyh-cw-nor@2x.png");
-      // }
       .teacher {
         display: flex;
         margin-bottom: 16px;
