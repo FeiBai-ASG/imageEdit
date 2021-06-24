@@ -12,7 +12,7 @@
       </div>
 
       <div class="content">
-        <div style="position: relative">
+        <div style="position: relative;display:flex;justify-content:center">
           <canvas
             id="picture_edit_canvas"
             :style="{ width: w + 'px', height: h + 'px' }"
@@ -160,6 +160,11 @@ export default {
     },
     saveCb (res) {
       console.log('saveCb', res)
+      this.wx.miniProgram.postMessage({
+        data: {
+          after: res
+        }
+      })
       this.wx.miniProgram.navigateBack({
         delta: 1
       })
@@ -173,12 +178,18 @@ export default {
   },
   created () {},
   mounted () {
+    console.log('Base64', this.Base64)
+    console.log(this.$route.query.src)
+
+    const imageSrc = this.Base64.decode(this.$route.query.src)
+    console.log(imageSrc)
     console.log(util)
     this.actionList = util.action
     const that = this
     const instance = new ped.ImageInfo({
       //   url: 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=1729868871,2742990556&fm=26&gp=0.jpg',
-      url: 'https://img2.baidu.com/it/u=3143062240,797042467&fm=26&fmt=auto&gp=0.jpg',
+      // url: 'https://img2.baidu.com/it/u=3143062240,797042467&fm=26&fmt=auto&gp=0.jpg',
+      url: imageSrc,
       // saveFn (res) {
       //   console.log('save')
       //   console.log(res)

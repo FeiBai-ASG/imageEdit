@@ -14,6 +14,11 @@ const routes = [
     path: '/HomeworkReport',
     name: 'HomeworkReport',
     component: () => import('../views/HomeworkReport/index.vue')
+  },
+  {
+    path: '/edit',
+    name: 'edit',
+    component: () => import('../views/imageEdit/index.vue')
   }
 
 ]
