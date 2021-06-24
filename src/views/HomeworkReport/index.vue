@@ -67,7 +67,7 @@
             "
           >
             <div class="homework-fill-title">非选择题</div>
-            <div class="homework-fill-answer">
+            <div class="homework-fill-answer" v-viewer>
               <img
                 class="answer-item"
                 v-for="item in homeworkCorrection.nonChoicePics"
@@ -108,6 +108,7 @@
                   homeworkCorrection.revisionPics &&
                     homeworkCorrection.revisionPics.length
                 "
+                v-viewer
               >
                 <img
                   class="review-image-item"
@@ -172,6 +173,7 @@
                 homeworkRevision.revisionPics &&
                   homeworkRevision.revisionPics.length
               "
+              v-viewer
             >
               <img
                 class="answer-item"
@@ -209,6 +211,7 @@
                   homeworkRevision.correctionPics &&
                     homeworkRevision.correctionPics.length
                 "
+                v-viewer
               >
                 <img
                   class="review-image-item"
