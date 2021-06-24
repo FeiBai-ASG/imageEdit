@@ -8,10 +8,8 @@
         alt=""
       />
       <div class="head-info">
-        <div class="head-info-classname">
-          课程名称：徐函二年级数学校区培优班
-        </div>
-        <div class="head-info-time">上课时间：2021-03-02 8:23-9:23 周三</div>
+        <div class="head-info-classname">课程名称：{{ classroomName }}</div>
+        <div class="head-info-time">上课时间：{{ classroomTime }}</div>
         <div class="head-info-handout">{{ handoutName }}</div>
       </div>
     </div>
@@ -26,7 +24,13 @@
             <div class="homework-time-title">提交作业时间</div>
             <div class="homework-time-text">2020-03-03 18:09:09</div>
           </div>
-          <div class="homework-choice">
+          <div
+            class="homework-choice"
+            v-if="
+              homeworkCorrection.choiceQuestion &&
+                homeworkCorrection.choiceQuestion.length
+            "
+          >
             <div class="homework-choice-title">
               <div class="homework-choice-title-text">选择题</div>
               <div class="homework-choice-title-key">
@@ -35,66 +39,110 @@
                     class="right-icon"
                     src="@/assets/image/zyyh-zq-nor@2x.png"
                   />
-                  <div class="right-text">正确 5</div>
+                  <div class="right-text">
+                    正确 {{ homeworkCorrection.rightNumber }}
+                  </div>
                 </div>
                 <div class="wrong">
                   <img
                     class="wrong-icon"
                     src="@/assets/image/zyyh-cw-nor@2x.png"
                   />
-                  <div class="wrong-text">错误 2</div>
+                  <div class="wrong-text">
+                    错误 {{ homeworkCorrection.wrongNumber }}
+                  </div>
                 </div>
               </div>
             </div>
             <div class="homework-choice-answer">
               <div
                 class="answer-item"
-                :class="{ wrong: item % 2 }"
-                v-for="item in 10"
-                :key="item"
+                :class="{ wrong: !Number(item.isCorrect) }"
+                v-for="item in homeworkCorrection.choiceQuestion"
+                :key="item.id"
               >
-                {{ item }}
+                {{ item.id }}
               </div>
             </div>
           </div>
-          <div class="homework-fill">
+          <div
+            class="homework-fill"
+            v-if="
+              homeworkCorrection.nonChoicePics &&
+                homeworkCorrection.nonChoicePics.length
+            "
+          >
             <div class="homework-fill-title">非选择题</div>
-            <div class="homework-fill-answer">
-              <div class="answer-item" v-for="item in 10" :key="item">
-                {{ item }}
-              </div>
+            <div class="homework-fill-answer" v-viewer>
+              <img
+                class="answer-item"
+                v-for="item in homeworkCorrection.nonChoicePics"
+                :key="item"
+                :src="item"
+              />
             </div>
           </div>
         </div>
-        <div class="homework-review">
-          <div class="teacher">
-            <div class="teacher-avatar"></div>
-            <div class="teacher-info">
-              <div class="teacher-name">徐函老师</div>
-              <div class="teacher-time">2020-03-03 18:09:09</div>
+        <template
+          v-if="
+            (homeworkCorrection.correctionPics &&
+              homeworkCorrection.correctionPics.length) ||
+              homeworkCorrection.wrongNumber ||
+              homeworkCorrection.feedback
+          "
+        >
+          <img
+            class="homework-review-line"
+            src="@/assets/image/zzyh-xx-nor@2x.png"
+            alt=""
+          />
+          <div class="homework-review">
+            <div class="teacher">
+              <img :src="teacherInfo.photo" class="teacher-avatar" />
+              <div class="teacher-name">{{ teacherInfo.name }}老师</div>
             </div>
-          </div>
-          <div class="review">
-            <div class="need-correct">需要订正</div>
-            <div class="review-text">
-              点评：作业完成的不太理想，上课认真听讲哦～
-            </div>
-            <div class="review-image">
-              <div class="review-image-item" v-for="item in 10" :key="item">
-                {{ item }}
+            <div class="review">
+              <div class="need-correct" v-if="homeworkCorrection.wrongNumber">
+                需要订正
+              </div>
+              <div class="review-text" v-if="homeworkCorrection.comment">
+                点评：{{ homeworkCorrection.comment }}
+              </div>
+              <div
+                class="review-image"
+                v-if="
+                  homeworkCorrection.revisionPics &&
+                    homeworkCorrection.revisionPics.length
+                "
+                v-viewer
+              >
+                <img
+                  class="review-image-item"
+                  :src="item"
+                  v-for="item in homeworkCorrection.correctionPics"
+                  :key="item"
+                />
               </div>
             </div>
           </div>
-        </div>
+        </template>
       </div>
-      <div class="content-homework correct">
+      <div class="content-homework correct" v-if="homeworkRevision.submitTime">
         <div class="correct-title">作业订正</div>
         <div class="homework-answer">
           <div class="homework-time">
-            <div class="homework-time-title">提交作业时间</div>
-            <div class="homework-time-text">2020-03-03 18:09:09</div>
+            <div class="homework-time-title">提交订正时间</div>
+            <div class="homework-time-text">
+              {{ homeworkRevision.submitTime }}
+            </div>
           </div>
-          <div class="homework-choice">
+          <div
+            class="homework-choice"
+            v-if="
+              homeworkRevision.choiceQuestion &&
+                homeworkRevision.choiceQuestion.length
+            "
+          >
             <div class="homework-choice-title">
               <div class="homework-choice-title-text">选择题</div>
               <div class="homework-choice-title-key">
@@ -103,63 +151,91 @@
                     class="right-icon"
                     src="@/assets/image/zyyh-zq-nor@2x.png"
                   />
-                  <div class="right-text">正确 5</div>
+                  <div class="right-text">
+                    正确 {{ homeworkRevision.rightNumber }}
+                  </div>
                 </div>
                 <div class="wrong">
                   <img
                     class="wrong-icon"
                     src="@/assets/image/zyyh-cw-nor@2x.png"
                   />
-                  <div class="wrong-text">错误 2</div>
+                  <div class="wrong-text">
+                    错误 {{ homeworkRevision.wrongNumber }}
+                  </div>
                 </div>
               </div>
             </div>
             <div class="homework-choice-answer">
               <div
                 class="answer-item"
-                :class="{ wrong: item % 2 }"
-                v-for="item in 10"
-                :key="item"
+                :class="{ wrong: !Number(item.isCorrect) }"
+                v-for="item in homeworkRevision.choiceQuestion"
+                :key="item.id"
               >
-                {{ item }}
+                {{ item.id }}
               </div>
             </div>
           </div>
-          <div class="homework-fill">
+          <div
+            class="homework-fill"
+            v-if="
+              homeworkRevision.revisionPics &&
+                homeworkRevision.revisionPics.length
+            "
+          >
             <div class="homework-fill-title">非选择题</div>
-            <div class="homework-fill-answer">
-              <div class="answer-item" v-for="item in 10" :key="item">
-                {{ item }}
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="homework-review">
-          <div class="teacher">
-            <div class="teacher-avatar"></div>
-            <div class="teacher-info">
-              <div class="teacher-name">徐函老师</div>
-              <div class="teacher-time">2020-03-03 18:09:09</div>
-            </div>
-          </div>
-          <div class="review">
-            <div class="need-correct">需要订正</div>
-            <div class="review-text">
-              点评：作业完成的不太理想，上课认真听讲哦～
-            </div>
-            <div class="review-image">
-              <div
-                class="review-image-item"
-                :class="{ wrong: item % 2 }"
-                v-for="item in 10"
+            <div class="homework-fill-answer" v-viewer>
+              <img
+                class="answer-item"
+                v-for="item in homeworkRevision.revisionPics"
                 :key="item"
-              >
-                {{ item }}
-              </div>
+                :src="item"
+              />
             </div>
           </div>
         </div>
+        <template
+          v-if="
+            (homeworkRevision.correctionPics &&
+              homeworkRevision.correctionPics.length) ||
+              homeworkRevision.feedback
+          "
+        >
+          <img
+            class="homework-review-line"
+            src="@/assets/image/zzyh-xx-nor@2x.png"
+            alt=""
+          />
+          <div class="homework-review">
+            <div class="teacher">
+              <img :src="teacherInfo.photo" class="teacher-avatar" />
+              <div class="teacher-name">{{ teacherInfo.name }}老师</div>
+            </div>
+            <div class="review">
+              <div class="review-text" v-if="homeworkRevision.feedback">
+                点评：{{ homeworkRevision.feedback }}
+              </div>
+              <div
+                class="review-image"
+                v-if="
+                  homeworkRevision.correctionPics &&
+                    homeworkRevision.correctionPics.length
+                "
+                v-viewer
+              >
+                <img
+                  class="review-image-item"
+                  :src="item"
+                  v-for="item in homeworkRevision.correctionPics"
+                  :key="item"
+                />
+              </div>
+            </div>
+          </div>
+        </template>
       </div>
+      <div class="button" @click="goHomeworkAnswer">查看作业解析</div>
       <div class="conent-bottom" style="height: 35px"></div>
     </div>
   </div>
@@ -172,30 +248,127 @@ export default {
   data () {
     return {
       handoutName: '',
+      classroomName: '',
+      classroomTime: '',
+      homeworkRevision: {},
+      teacherInfo: {
+        name: '',
+        photo:
+          'https://homework-1251489922.cos.ap-shanghai.myqcloud.com/homework%2F20210624%2F162451676804%402x.png'
+      },
+      homeworkCorrection: {},
+      answerInfo: {
+        choice: {},
+        fill: {}
+      },
+      classroomId: '',
+      studentId: '',
       studentName: ''
     }
   },
   created () {
-    const { classroom, handoutBind, studentId } = this.$route.query
-    this.handoutName = handoutBind
-    console.log({ classroom, handoutBind, studentId })
+    const { classroom, studentId } = this.$route.query
+    console.log({ classroom, studentId })
+    this.studentId = studentId
+    this.classroomId = classroom
     this.setStudentInfo(studentId)
+    this.setClassInfo(classroom)
+    this.setHandoutInfo(classroom)
+    this.setHomeworkInfo(classroom, studentId)
   },
   methods: {
-    getClassInfo (classroom) {
-      console.log(classroom)
+    setClassInfo (classroom) {
+      const weekday = '日一二三四五六'
+      const formateTime = classroomInfo => {
+        const data = new Date(classroomInfo.attends_date_time * 1000)
+
+        return `${data.getFullYear()}-${(data.getMonth() + 1)
+          .toString()
+          .padStart(2, '0')}-${data
+          .getDate()
+          .toString()
+          .padStart(2, '0')} ${classroomInfo.start_text}-${
+          classroomInfo.end_text
+        } 周${weekday[data.getDay()]}`
+      }
+      this.$api.classroomNumList({ id: classroom }).then(classroomInfoList => {
+        const classroomInfo = classroomInfoList[0]
+        if (classroomInfo) {
+          this.classroomName = classroomInfo.name.replace(/\s+/g, '')
+          this.classroomTime = formateTime(classroomInfo)
+          this.$api
+            .getTeacherInfoByid({ id: classroomInfo.teacher })
+            .then(teacherList => {
+              const teacherInfo = teacherList[0]
+              if (teacherInfo) {
+                this.teacherInfo = teacherInfo
+              }
+              console.log(teacherList)
+            })
+        }
+      })
+    },
+    setHandoutInfo (classroom) {
+      this.$api.getBindInfo({ classroom }).then(handoutList => {
+        const handoutInfo = handoutList[0]
+        if (handoutInfo) {
+          this.handoutName =
+            '第 ' +
+            (Number(handoutInfo.handout_sort) + 1) +
+            ' 讲 ' +
+            handoutInfo.handout_name
+        }
+      })
     },
     setStudentInfo (studentId) {
       this.$api.getStudentList({ id: studentId }).then(studentList => {
+        studentList = studentList.data
         const studentInfo = studentList[0]
         if (studentInfo) {
           this.studentName = studentInfo.name
           document.title = studentInfo.name + '作业报告'
         }
       })
+    },
+    setHomeworkInfo (classroom, studentId) {
+      this.$api
+        .getHomeworkRevisionForStu({ classroom, stu_id: studentId })
+        .then(homeworkRevision => {
+          console.log(homeworkRevision)
+          homeworkRevision.rightNumber = homeworkRevision.choiceQuestion.filter(
+            answerInfo => Number(answerInfo.isCorrect)
+          ).length
+          homeworkRevision.wrongNumber =
+            homeworkRevision.choiceQuestion.length -
+            homeworkRevision.rightNumber
+          this.homeworkRevision = homeworkRevision
+        })
+      this.$api
+        .getHomeworkCorrectionForStu({ classroom, stu_id: studentId })
+        .then(homeworkCorrection => {
+          homeworkCorrection.rightNumber = homeworkCorrection.choiceQuestion.filter(
+            answerInfo => Number(answerInfo.isCorrect)
+          ).length
+          homeworkCorrection.wrongNumber =
+            homeworkCorrection.choiceQuestion.length -
+            homeworkCorrection.rightNumber
+          this.homeworkCorrection = homeworkCorrection
+
+          console.log(homeworkCorrection)
+        })
+    },
+    goHomeworkAnswer () {
+      const url =
+        '/pages/EntranceAnalysis/EntranceAnalysis?classroom=' +
+        this.classroomId +
+        '&type=2&student=' +
+        this.studentId +
+        '&is_can=1'
+      this.wx.miniProgram.navigateTo({
+        url
+      })
     }
   }
-
 }
 </script>
 
@@ -368,6 +541,7 @@ export default {
           grid-row-gap: 28px;
           grid-column-gap: 26px;
           .answer-item {
+            object-fit: cover;
             display: inline-grid;
             width: 184px;
             height: 184px;
@@ -377,12 +551,19 @@ export default {
         }
       }
     }
+    .homework-review-line {
+      width: 630px;
+      height: 2px;
+      margin: 0 13px;
+    }
     .homework-review {
       padding: 28px 20px 32px 20px;
       .teacher {
         display: flex;
         margin-bottom: 16px;
+        align-items: center;
         &-avatar {
+          object-fit: cover;
           width: 92px;
           height: 92px;
           border-radius: 92px;
@@ -394,13 +575,6 @@ export default {
           font-weight: 400;
           color: #000000;
           line-height: 40px;
-        }
-        &-time {
-          font-size: 26px;
-          font-weight: 400;
-          color: #666666;
-          line-height: 36px;
-          margin-top: 6px;
         }
       }
       .review {
@@ -429,6 +603,7 @@ export default {
           grid-row-gap: 28px;
           grid-column-gap: 20px;
           &-item {
+            object-fit: cover;
             display: inline-grid;
             width: 122px;
             height: 122px;
@@ -452,5 +627,16 @@ export default {
     margin-top: 36px;
     margin-left: 26px;
   }
+}
+.button {
+  width: 600px;
+  height: 88px;
+  background: #5e4cf9;
+  border-radius: 88px;
+  font-size: 32px;
+  font-weight: 400;
+  color: #ffffff;
+  line-height: 88px;
+  text-align: center;
 }
 </style>

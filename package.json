@@ -17,6 +17,7 @@
     "js-base64": "^3.6.1",
     "postcss-pxtorem": "^5.1.1",
     "qs": "^6.10.1",
+    "v-viewer": "^1.6.3",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
     "weixin-js-sdk": "^1.6.0"
