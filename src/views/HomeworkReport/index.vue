@@ -8,10 +8,8 @@
         alt=""
       />
       <div class="head-info">
-        <div class="head-info-classname">
-          课程名称：徐函二年级数学校区培优班
-        </div>
-        <div class="head-info-time">上课时间：2021-03-02 8:23-9:23 周三</div>
+        <div class="head-info-classname">课程名称：{{ classroomName }}</div>
+        <div class="head-info-time">上课时间：{{ classroomTime }}</div>
         <div class="head-info-handout">{{ handoutName }}</div>
       </div>
     </div>
@@ -180,13 +178,34 @@ export default {
     this.handoutName = handoutBind
     console.log({ classroom, handoutBind, studentId })
     this.setStudentInfo(studentId)
+    this.setClassInfo(classroom)
   },
   methods: {
-    getClassInfo (classroom) {
-      console.log(classroom)
+    setClassInfo (classroom) {
+      const weekday = '日一二三四五六'
+      const formateTime = classroomInfo => {
+        const data = new Date(classroomInfo.attends_date_time * 1000)
+
+        return `${data.getFullYear()}-${(data.getMonth() + 1)
+          .toString()
+          .padStart(2, '0')}-${data
+          .getDate()
+          .toString()
+          .padStart(2, '0')} ${classroomInfo.start_text}-${
+          classroomInfo.end_text
+        } 周${weekday[data.getDay()]}`
+      }
+      this.$api.classroomNumList({ id: classroom }).then(classroomInfoList => {
+        const classroomInfo = classroomInfoList[0]
+        if (classroomInfo) {
+          this.classroomName = classroomInfo.name
+          this.classroomTime = formateTime(classroomInfo)
+        }
+      })
     },
     setStudentInfo (studentId) {
       this.$api.getStudentList({ id: studentId }).then(studentList => {
+        studentList = studentList.data
         const studentInfo = studentList[0]
         if (studentInfo) {
           this.studentName = studentInfo.name

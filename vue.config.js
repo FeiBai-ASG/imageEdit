@@ -41,6 +41,14 @@ module.exports = {
         pathRewrite: {
           '^/apiERP': '/'
         }
+      },
+      '/apiTRMS': {
+        target: 'http://www.feibaiedu.net/TRMS/Ver2',
+        changeOrigin: true,
+        ws: true,
+        pathRewrite: {
+          '^/apiTRMS': '/'
+        }
       }
     }
   },

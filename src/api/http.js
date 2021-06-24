@@ -42,7 +42,7 @@ instance.interceptors.response.use(
   // 请求成功
   (res) =>
     res.status === 200 && res.data.code === 0
-      ? Promise.resolve(res.data)
+      ? Promise.resolve(res.data.data)
       : Promise.reject(res.data),
   // 请求失败
   (error) => {
