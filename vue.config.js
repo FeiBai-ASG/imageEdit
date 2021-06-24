@@ -30,5 +30,20 @@ module.exports = {
     }
   },
 
+  devServer: {
+    port: 8080,
+    // 所有的接口请求代理
+    proxy: {
+      '/apiERP': {
+        target: 'http://www.feibaiedu.net/erp4_debug/Ver2',
+        changeOrigin: true,
+        ws: true,
+        pathRewrite: {
+          '^/apiERP': '/'
+        }
+      }
+    }
+  },
+
   productionSourceMap: false
 }
