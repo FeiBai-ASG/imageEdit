@@ -48,7 +48,7 @@ export default {
   colors: [
     {
       color: '#F80E0F',
-      picked: false
+      picked: true
     },
     {
       color: '#2A82E4',

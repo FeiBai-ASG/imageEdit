@@ -1,6 +1,6 @@
 <template>
   <div class="bottom-com">
-    <div class="colors">
+    <div v-show="showColors" class="colors">
       <div v-for="(item, index) in colors" :key="item.color">
         <div
           @click="changeColor(index)"
@@ -23,12 +23,15 @@
       <div v-for="item in actions" :key="item.text">
         <div class="action" @click="changeAction(item)">
           <div class="img-wrapper">
-            <img v-if="!item.picked" class="action-icon" :src="item.src" alt="" />
+            <img
+              v-if="!item.picked"
+              class="action-icon"
+              :src="item.src"
+              alt=""
+            />
             <img v-else class="action-icon" :src="item.active" alt="" />
-
           </div>
           <div class="action-text">{{ item.text }}</div>
-
         </div>
       </div>
     </div>
@@ -45,7 +48,8 @@ export default {
       actions: [],
       colors: [],
       blackChecked: '',
-      checked: ''
+      checked: '',
+      showColors: false
     }
   },
   methods: {
@@ -57,21 +61,51 @@ export default {
       this.$emit('changeColor', {
         color: this.colors[index].color
       })
+      this.showColorsCb && this.showColorsCb()
     },
     changeAction (item) {
-      console.log(item)
       const type = Number(item.type)
       if (type === 1) {
-        this.actions[0].picked = true
-        this.actions[1].picked = false
+        const currStatus = this.actions[0].picked
+        if (!currStatus) {
+          this.showColorsCom()
+          diffTypeAction(1)
+          this.actions[1].picked = false
+        } else {
+          this.hideColorsCom()
+          diffTypeAction(0)
+        }
+        this.actions[0].picked = !currStatus
+        this.showColorsCb = null
       } else if (type === 2) {
-        this.actions[0].picked = false
-        this.actions[1].picked = true
+        const currStatus = this.actions[1].picked
+        this.showColorsCom()
+        if (!currStatus) {
+          this.actions[1].picked = !currStatus
+          this.actions[0].picked = false
+          this.showColorsCb = () => {
+            diffTypeAction(2)
+            this.hideColorsCom()
+            this.actions[1].picked = false
+          }
+        } else {
+          this.hideColorsCom()
+          this.actions[1].picked = false
+        }
       } else {
         this.actions[0].picked = false
         this.actions[1].picked = false
+        diffTypeAction(type)
+        this.showColorsCb = null
       }
-      diffTypeAction(type)
+    },
+    showColorsCb () {
+    },
+    showColorsCom () {
+      this.showColors = true
+    },
+    hideColorsCom () {
+      this.showColors = false
     }
   },
   created () {
@@ -103,9 +137,9 @@ export default {
     border: 2px solid #ffffff;
   }
   .icon-wrapper {
-      width:100%;
-      height: 100%;
-      display: flex;
+    width: 100%;
+    height: 100%;
+    display: flex;
     justify-content: center;
   }
   .icon {
@@ -113,10 +147,10 @@ export default {
     height: 32px;
     margin-top: 16px;
   }
-    .img-wrapper {
-        display: flex;
-        justify-content: center;
-    }
+  .img-wrapper {
+    display: flex;
+    justify-content: center;
+  }
   .actions {
     display: flex;
     justify-content: space-between;
@@ -124,11 +158,11 @@ export default {
     padding: 0 22px;
   }
   .action-icon {
-      width: 36px;
-      height: 36px;
+    width: 36px;
+    height: 36px;
   }
   .action-text {
-      margin-top: 9px;
+    margin-top: 9px;
   }
 }
 </style>
