@@ -29,7 +29,9 @@ export const pedGlobal = {
   paintingArray: [],
   currentColor: 'red',
   currentRoatteCnt: 0,
-  isRotated: false
+  isRotated: false,
+  editSteps: [],
+  lineWidth: 5
 }
 
 export function changeOperate (type) {

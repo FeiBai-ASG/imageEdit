@@ -79,6 +79,8 @@ export default {
         this.showColorsCb = null
       } else if (type === 2) {
         const currStatus = this.actions[1].picked
+        diffTypeAction(0)
+
         this.showColorsCom()
         if (!currStatus) {
           this.actions[1].picked = !currStatus

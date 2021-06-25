@@ -26,14 +26,15 @@ function addScaleEvent (dom) {
         // 记录初始的滑动位置
         setSingleCoordinate(singleStartTouche, e)
         context.beginPath()
-        context.lineWidth = 5
+        context.lineWidth = G.lineWidth
         // 计算canvas dom 偏移
         const padding = getCanvasPadding()
         const x = (e.touches[0].pageX - boxOffsetLeft - document.body.scrollLeft + G.canvasGrandDom.scrollLeft - padding) * scaleStyle
         const y = (e.touches[0].pageY - boxOffsetTop - document.body.scrollTop + G.canvasGrandDom.scrollTop) * scaleStyle
         context.moveTo(x, y)
         // 记录初始点坐标
-        G.paintingArray.push({ start: { x, y }, moves: [] })
+        G.paintingArray.push({ start: { x, y }, moves: [], color: G.currentColor })
+        G.editSteps.push({ start: { x, y }, moves: [] })
       }
     }
   }, false)
@@ -122,6 +123,8 @@ function addTextEvent () {
         dom.style.left = (G.boxSize._width - domWidth) / 2 + G.canvasGrandDom.scrollLeft - parseFloat(G.canvasGrandDom.style.paddingLeft || 0) + 'px'
         G.inputDomArray.push(dom)
         // addDragMoveEvent(dom)
+        G.editSteps.push({ type: 'dom', dom })
+
         addTextMoveEvent(dom)
         addDeleteEvent(dom)
       }
@@ -138,6 +141,11 @@ function addDeleteEvent (dom) {
   console.log(deleteImgDom)
   deleteImgDom.addEventListener('click', function (e) {
     e.preventDefault()
+    const findIndex = G.editSteps.findIndex(item => item.dom === dom)
+    console.log(findIndex)
+    if (findIndex > -1) {
+      G.editSteps.splice(findIndex, 1)
+    }
     dom.remove()
   }, false)
 }
@@ -164,6 +172,7 @@ function addOperateEvent () {
         resetImg()
         clearInputDom()
         G.paintingArray = []
+        G.editSteps = []
         resetOperateOne()
       } else if (type === 2) {
         G.textBox.style.display = 'block'
@@ -210,15 +219,47 @@ function diffTypeAction (type) {
   } else if (type === 3) {
     rotateCanvas()
   } else if (type === 4) {
-    if (G.paintingArray.length > 0) {
+    if (G.editSteps.length > 0) {
       resetImg()
       const context = G.canvasContext
-      G.paintingArray.pop()
-      context.beginPath()
+
+      const step = G.editSteps.pop()
+      if (step.type === 'dom') {
+        step.dom.remove()
+        console.log(step.dom)
+      } else {
+        G.paintingArray.pop()
+      }
+      // context.beginPath()
+
+      // for (let i = 0; i < G.paintingArray.length; i++) {
+      //   const item = G.paintingArray[i]
+      //   context.beginPath()
+
+      //   context.moveTo(item.start.x, item.start.y)
+
+      //   item.moves.forEach(move => {
+      //     context.strokeStyle = item.color
+      //     context.fillStyle = item.color
+      //     console.log(context.strokeStyle)
+
+      //     context.lineTo(move.x, move.y)
+      //     context.stroke()
+      //   })
+      // }
+      context.lineWidth = G.lineWidth
+
       G.paintingArray.forEach((item) => {
+        context.beginPath()
+
         context.moveTo(item.start.x, item.start.y)
+
         item.moves.forEach(move => {
+          context.strokeStyle = item.color
+          context.fillStyle = item.color
+          console.log(context.strokeStyle)
           context.lineTo(move.x, move.y)
+          context.stroke()
         })
       })
       context.stroke()
@@ -228,6 +269,7 @@ function diffTypeAction (type) {
     resetImg()
     clearInputDom()
     G.paintingArray = []
+    G.editSteps = []
     resetOperateOne()
   }
 }
@@ -409,6 +451,7 @@ function addSaveEvent (dom, cxt, saveFn) {
     G.pictureEditBox.style.display = 'none'
     clearInputDom()
     G.paintingArray = []
+    G.editSteps = []
     G.operateType = 0
   }, false)
 }
@@ -451,6 +494,7 @@ function saveImage (saveFn) {
   G.pictureEditBox.style.display = 'none'
   clearInputDom()
   G.paintingArray = []
+  G.editSteps = []
   G.operateType = 0
 }
 
@@ -459,6 +503,7 @@ function addCancelEvent (dom) {
     G.pictureEditBox.style.display = 'none'
     clearInputDom()
     G.paintingArray = []
+    G.editSteps = []
     G.operateType = 0
   }, false)
 }
