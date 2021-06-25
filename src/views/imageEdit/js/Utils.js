@@ -88,8 +88,9 @@ function addTextEvent () {
     const textArray = G.textInput.innerText.split(/[\n\r]+/)
     G.textBox.style.display = 'none'
     const fontSize = 15
-    if (textArray.length > 0) {
-      G.inputArray.push(textArray)
+    const textAll = textArray.join('')
+    if (textAll && textArray.length > 0) {
+      G.inputArray.push({ array: textArray, color: G.currentColor })
       if (G.textOperateIndex === 0) {
         let textDom = `<div 
         style="position: absolute;
@@ -114,18 +115,27 @@ function addTextEvent () {
         textDom += '</div>'
 
         textDom += '</div>'
-        const dom = createNode(textDom)
-        G.canvasParentDom.appendChild(dom)
-        // 获取dom的宽高以居中显示
-        const domWidth = dom.offsetWidth
-        const domHeight = dom.offsetHeight
-        dom.style.top = (G.boxSize._height - domHeight) / 2 + G.canvasGrandDom.scrollTop - parseFloat(G.canvasGrandDom.style.paddingTop || 0) + 'px'
-        dom.style.left = (G.boxSize._width - domWidth) / 2 + G.canvasGrandDom.scrollLeft - parseFloat(G.canvasGrandDom.style.paddingLeft || 0) + 'px'
-        G.inputDomArray.push(dom)
-        // addDragMoveEvent(dom)
-        G.editSteps.push({ type: 'dom', dom })
+        let dom = createNode(textDom)
 
+        if (G.currentTextBox) {
+          G.currentTextBox.innerHTML = ''
+          console.log(G.currentTextBox)
+          G.currentTextBox.appendChild(dom.childNodes[1].cloneNode(true))
+          dom = G.currentTextBox
+          G.currentTextBox = null
+        } else {
+          G.canvasParentDom.appendChild(dom)
+          // 获取dom的宽高以居中显示
+          const domWidth = dom.offsetWidth
+          const domHeight = dom.offsetHeight
+          dom.style.top = (G.boxSize._height - domHeight) / 2 + G.canvasGrandDom.scrollTop - parseFloat(G.canvasGrandDom.style.paddingTop || 0) + 'px'
+          dom.style.left = (G.boxSize._width - domWidth) / 2 + G.canvasGrandDom.scrollLeft - parseFloat(G.canvasGrandDom.style.paddingLeft || 0) + 'px'
+          G.inputDomArray.push(dom)
+          // addDragMoveEvent(dom)
+          G.editSteps.push({ type: 'dom', dom, color: G.currentColor })
+        }
         addTextMoveEvent(dom)
+        addTextClickEvent(dom)
         addDeleteEvent(dom)
       }
       G.textIndex++
@@ -137,17 +147,72 @@ function addTextEvent () {
 }
 
 function addDeleteEvent (dom) {
-  const deleteImgDom = dom.childNodes[1].childNodes[1]
-  console.log(deleteImgDom)
+  let div
+  for (let i = 0; i < dom.childNodes.length; i++) {
+    if (dom.childNodes[i].nodeName === 'DIV') {
+      div = dom.childNodes[i]
+      break
+    }
+  }
+  let deleteImgDom
+
+  for (let i = 0; i < div.childNodes.length; i++) {
+    if (div.childNodes[i].nodeName === 'IMG') {
+      deleteImgDom = div.childNodes[i]
+      break
+    }
+  }
+  console.log('deleteImgDom', deleteImgDom)
   deleteImgDom.addEventListener('click', function (e) {
+    console.log('delete')
     e.preventDefault()
+    e.stopPropagation()
     const findIndex = G.editSteps.findIndex(item => item.dom === dom)
-    console.log(findIndex)
     if (findIndex > -1) {
       G.editSteps.splice(findIndex, 1)
     }
+    const findInDomArray = G.inputDomArray.findIndex(item => item === dom)
+    if (findInDomArray > -1) {
+      G.inputDomArray.splice(findInDomArray, 1)
+      G.inputArray.splice(findInDomArray, 1)
+    }
+
     dom.remove()
   }, false)
+}
+
+function addTextClickEvent (dom) {
+  let div
+  for (let i = 0; i < dom.childNodes.length; i++) {
+    if (dom.childNodes[i].nodeName === 'DIV') {
+      div = dom.childNodes[i]
+      break
+    }
+  }
+
+  const currDom = div
+  const textDom = div.childNodes
+  const text = []
+  for (let i = 0; i < textDom.length; i++) {
+    const node = textDom[i]
+    if (node.nodeName === 'SPAN') {
+      text.push(node.innerText)
+    }
+  }
+  console.log(currDom)
+  currDom.addEventListener('click', function (e) {
+    console.log('dom clicked')
+    // e.preventDefault()
+    // e.stopPropagation()
+
+    G.textBox.style.display = 'block'
+    G.textInput.style.display = 'inline-block'
+    G.textInput.innerText = text.join('\n')
+
+    G.textInput.focus()
+    G.currentTextBox = dom
+    resetOperateOne()
+  })
 }
 
 function resetOperateOne () {
@@ -213,8 +278,8 @@ function diffTypeAction (type) {
   } else if (type === 2) {
     G.textBox.style.display = 'block'
     G.textInput.style.display = 'inline-block'
-    G.textInput.focus()
     document.execCommand('justifyLeft')
+    G.textInput.focus()
     resetOperateOne()
   } else if (type === 3) {
     rotateCanvas()
@@ -415,51 +480,53 @@ function fixPadding () {
 // }
 
 function addSaveEvent (dom, cxt, saveFn) {
-  dom.addEventListener('click', function () {
-    const array = G.inputArray
-    const padding = getCanvasPadding()
-    if (array.length > 0) {
-      for (let i = 0; i < array.length; i++) {
-        const item = G.inputDomArray[i]
-        const textScale = getTextScale(item)
-        // const domLeft = parseFloat(item.style.left) - padding
-        const domLeft = parseFloat(item.style.left) - padding
+  // dom.addEventListener('click', function () {
+  //   const array = G.inputArray
+  //   const padding = getCanvasPadding()
+  //   if (array.length > 0) {
+  //     for (let i = 0; i < array.length; i++) {
+  //       const item = G.inputDomArray[i]
+  //       const textScale = getTextScale(item)
+  //       // const domLeft = parseFloat(item.style.left) - padding
+  //       const domLeft = parseFloat(item.style.left) - padding
 
-        const domTop = parseFloat(item.style.top)
-        // let frontSize = parseFloat(item.style.fontSize) / parseFloat(G.canvas.style.height) * G.img._height
-        let fontSize = parseFloat(item.style.fontSize)
+  //       const domTop = parseFloat(item.style.top)
+  //       // let frontSize = parseFloat(item.style.fontSize) / parseFloat(G.canvas.style.height) * G.img._height
+  //       let fontSize = parseFloat(item.style.fontSize)
 
-        fontSize *= textScale
-        console.log(fontSize)
-        // drawRoundedRect(cxt, domLeft * scaleStyle, domTop, parseFloat(item.offsetWidth) * scaleStyle, parseFloat(item.offsetHeight) * scaleStyle, 5 * scaleStyle, true, false)
-        console.log('scaleStyle===', scaleStyle)
-        cxt.fillStyle = 'white'
-        cxt.fill()
-        for (let j = 0; j < array[i].length; j++) {
-          cxt.fillStyle = 'black'
-          cxt.font = `${fontSize}px helvetica`
-          // +5是为了修复paddingLeft     *1.4是为了修复line-height
-          cxt.fillText(array[i][j], (domLeft + 5) * scaleStyle, domTop + ((j) * (parseFloat(item.style.fontSize) * textScale * 1.4)) * scaleStyle + fontSize)
-          //   cxt.fillText(array[i][j], 0, fontSize)
-        }
-      }
-      // 画完后移除dom元素
-      clearInputDom()
-    }
-    const dataUrl = G.canvas.toDataURL()
-    saveFn(dataUrl)
-    G.pictureEditBox.style.display = 'none'
-    clearInputDom()
-    G.paintingArray = []
-    G.editSteps = []
-    G.operateType = 0
-  }, false)
+  //       fontSize *= textScale
+  //       console.log(fontSize)
+  //       // drawRoundedRect(cxt, domLeft * scaleStyle, domTop, parseFloat(item.offsetWidth) * scaleStyle, parseFloat(item.offsetHeight) * scaleStyle, 5 * scaleStyle, true, false)
+  //       console.log('scaleStyle===', scaleStyle)
+  //       cxt.fillStyle = 'white'
+  //       cxt.fill()
+  //       for (let j = 0; j < array[i].length; j++) {
+  //         cxt.fillStyle = 'red'
+  //         cxt.font = `${fontSize}px helvetica`
+  //         // +5是为了修复paddingLeft     *1.4是为了修复line-height
+  //         cxt.fillText(array[i][j], (domLeft + 5) * scaleStyle, domTop + ((j) * (parseFloat(item.style.fontSize) * textScale * 1.4)) * scaleStyle + fontSize)
+  //         //   cxt.fillText(array[i][j], 0, fontSize)
+  //       }
+  //     }
+  //     // 画完后移除dom元素
+  //     clearInputDom()
+  //   }
+  //   const dataUrl = G.canvas.toDataURL()
+  //   saveFn(dataUrl)
+  //   G.pictureEditBox.style.display = 'none'
+  //   clearInputDom()
+  //   G.paintingArray = []
+  //   G.editSteps = []
+  //   G.operateType = 0
+  // }, false)
 }
 
 function saveImage (saveFn) {
 // const dom = document.getElementById('picture_edit_save')
   const cxt = G.canvasContext
   const array = G.inputArray
+  console.log('array', array)
+
   const padding = getCanvasPadding()
   if (array.length > 0) {
     for (let i = 0; i < array.length; i++) {
@@ -478,11 +545,11 @@ function saveImage (saveFn) {
       console.log('scaleStyle===', scaleStyle)
       cxt.fillStyle = 'white'
       cxt.fill()
-      for (let j = 0; j < array[i].length; j++) {
-        cxt.fillStyle = 'black'
+      for (let j = 0; j < array[i].array.length; j++) {
+        cxt.fillStyle = array[i].color
         cxt.font = `${fontSize}px helvetica`
         // +5是为了修复paddingLeft     *1.4是为了修复line-height
-        cxt.fillText(array[i][j], (domLeft + 5) * scaleStyle, domTop + ((j) * (parseFloat(item.style.fontSize) * textScale * 1.4)) * scaleStyle + fontSize)
+        cxt.fillText(array[i].array[j], (domLeft + 5) * scaleStyle, domTop + ((j) * (parseFloat(item.style.fontSize) * textScale * 1.4)) * scaleStyle + fontSize)
         //   cxt.fillText(array[i][j], 0, fontSize)
       }
     }

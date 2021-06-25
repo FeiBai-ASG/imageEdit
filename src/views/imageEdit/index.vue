@@ -159,7 +159,8 @@ export default {
       saveImage(this.saveCb)
     },
     saveCb (res) {
-      console.log('saveCb', res)
+      // this.base64Img = res
+      // // console.log('saveCb', res)
       this.wx.miniProgram.postMessage({
         data: {
           after: res
@@ -179,7 +180,7 @@ export default {
   created () {},
   mounted () {
     const imageSrc = this.Base64.decode(this.$route.query.src)
-
+    // console.log(imageSrc)
     this.actionList = util.action
     const that = this
     const instance = new ped.ImageInfo({

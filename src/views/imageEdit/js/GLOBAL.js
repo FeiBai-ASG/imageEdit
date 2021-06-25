@@ -31,7 +31,8 @@ export const pedGlobal = {
   currentRoatteCnt: 0,
   isRotated: false,
   editSteps: [],
-  lineWidth: 5
+  lineWidth: 5,
+  currentTextBox: null
 }
 
 export function changeOperate (type) {
