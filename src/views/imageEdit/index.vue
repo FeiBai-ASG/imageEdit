@@ -178,13 +178,14 @@ export default {
   },
   created () {},
   mounted () {
-    // const imageSrc = this.Base64.decode(this.$route.query.src)
+    const imageSrc = this.Base64.decode(this.$route.query.src)
+
     this.actionList = util.action
     const that = this
     const instance = new ped.ImageInfo({
       //   url: 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=1729868871,2742990556&fm=26&gp=0.jpg',
-      url: 'https://img2.baidu.com/it/u=3143062240,797042467&fm=26&fmt=auto&gp=0.jpg',
-      // url: imageSrc,
+      // url: 'https://img2.baidu.com/it/u=3143062240,797042467&fm=26&fmt=auto&gp=0.jpg',
+      url: imageSrc,
       // saveFn (res) {
       //   console.log('save')
       //   console.log(res)
