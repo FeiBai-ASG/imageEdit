@@ -8,7 +8,7 @@
     <div class="contanier">
       <div class="header clearfix">
         <span @click="cancel" class="float-l btn-normal" id="picture_edit_cancel"> 取消 </span>
-        <span @click="save" class="float-r btn-normal" id="picture_edit_save">保存</span>
+        <span v-show="G.editSteps && G.editSteps.length > 0" @click="save" class="float-r btn-normal" id="picture_edit_save">保存</span>
       </div>
 
       <div class="content">
