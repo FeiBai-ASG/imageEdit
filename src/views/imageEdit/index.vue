@@ -88,7 +88,6 @@ import util from './utils/index'
 import BottomCom from './components/bottom.vue'
 
 import { saveImage } from './js/Utils'
-
 export default {
   components: {
     BottomCom

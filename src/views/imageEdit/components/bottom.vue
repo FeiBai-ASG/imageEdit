@@ -97,6 +97,7 @@ export default {
       } else {
         this.actions[0].picked = false
         this.actions[1].picked = false
+
         diffTypeAction(type)
         this.showColorsCb = null
       }

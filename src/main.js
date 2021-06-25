@@ -11,6 +11,8 @@ import api from './api/api.js'
 import Viewer from 'v-viewer'
 import 'viewerjs/dist/viewer.css'
 
+import { Toast } from 'vant'
+
 Vue.use(Viewer, {
   defaultOptions: {
     inline: false,
@@ -28,6 +30,8 @@ Vue.use(Viewer, {
     keyboard: false // 是否支持键盘
   }
 })
+
+Vue.use(Toast)
 
 Vue.prototype.$api = api
 

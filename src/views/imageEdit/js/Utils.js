@@ -1,5 +1,6 @@
 import { pedGlobal as G, changeOperate } from './GLOBAL'
 import deleteIcon from '../images/delete.png'
+import { Toast } from 'vant'
 
 let scaleStyle = 0
 function createNode (txt, domType) {
@@ -43,6 +44,7 @@ function addScaleEvent (dom) {
     if (e.touches.length === 2) {
       e.preventDefault()
       resetOperateOne()
+      const oldType = G.operateType
       G.operateType = 0
       scale = getScaleNum(doubleStartTouche, e.touches)
       doubleStartTouche = e.touches
@@ -64,6 +66,7 @@ function addScaleEvent (dom) {
           item.style.left = (parseFloat(item.style.left) / oldWidth * newWidth).toFixed(4) + 'px'
         })
       }
+      G.operateType = oldType
     } else if (e.touches.length === 1) {
       if (G.operateType === 1) {
         e.preventDefault()
@@ -282,6 +285,10 @@ function diffTypeAction (type) {
     G.textInput.focus()
     resetOperateOne()
   } else if (type === 3) {
+    if (G.editSteps.length > 0) {
+      Toast('有编辑内容时不可旋转')
+      return
+    }
     rotateCanvas()
   } else if (type === 4) {
     if (G.editSteps.length > 0) {
