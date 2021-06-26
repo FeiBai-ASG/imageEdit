@@ -37,6 +37,7 @@ export const pedGlobal = {
 
 export function changeOperate (type) {
   pedGlobal.operateType = type
+  console.log(pedGlobal.operateType)
 }
 
 export function setCanvas (canvas, textBox, textInput) {
