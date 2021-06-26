@@ -1,5 +1,5 @@
 <template>
-  <div class="bottom-com">
+  <div id="picture-edit-bottom" class="bottom-com">
     <div v-show="showColors" class="colors">
       <div v-for="(item, index) in colors" :key="item.color">
         <div
@@ -19,6 +19,7 @@
         </div>
       </div>
     </div>
+    <div class="occupy" v-show="!showColors"></div>
     <div class="actions">
       <div v-for="item in actions" :key="item.text">
         <div class="action" @click="changeAction(item)">
@@ -166,6 +167,9 @@ export default {
   }
   .action-text {
     margin-top: 9px;
+  }
+  .occupy {
+    height: 64px;
   }
 }
 </style>

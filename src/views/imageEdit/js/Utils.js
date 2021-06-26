@@ -15,7 +15,7 @@ function addScaleEvent (dom) {
 
   let doubleStartTouche = null
   let scale = 1
-  scaleStyle = (dom.width / parseFloat(dom.style.width)).toFixed(4)
+  scaleStyle = (dom.width / parseFloat(dom.style.width || dom.width)).toFixed(4)
   const context = G.canvasContext
   let boxOffsetTop = G.canvasParentDom.offsetTop
   let boxOffsetLeft = G.canvasParentDom.offsetLeft
@@ -75,7 +75,7 @@ function addScaleEvent (dom) {
         const x = parseFloat((e.touches[0].pageX - boxOffsetLeft - document.body.scrollLeft + G.canvasGrandDom.scrollLeft - padding) * scaleStyle)
         const y = parseFloat((e.touches[0].pageY - boxOffsetTop - document.body.scrollTop + G.canvasGrandDom.scrollTop) * scaleStyle)
         context.lineTo(x, y)
-
+        console.log('G.canvasGrandDom.scrollLeft', G.canvasGrandDom.scrollLeft)
         context.stroke()
         // 记录初始的滑动位置
         setSingleCoordinate(singleStartTouche, e)
@@ -617,9 +617,14 @@ function getTextScale (dom) {
 function rotateCanvas () {
   const canvasDom = document.getElementById('picture_edit_canvas')
   const ctx = G.canvasContext
+
+  const bottomDom = document.getElementById('picture-edit-bottom')
+  const bottomHeight = bottomDom.offsetHeight
+  const headerDom = document.getElementById('picture-edit-header')
+  const headerHeight = headerDom.offsetHeight
   // 等比缩放图片 计算canvas以及图片宽高
   const cw = `${G.device._width}`
-  const ch = `${G.device._height - 200 - 30}`
+  const ch = `${G.device._height - bottomHeight - headerHeight}`
   let w, h
   var w1 = cw
   var h1 = ch

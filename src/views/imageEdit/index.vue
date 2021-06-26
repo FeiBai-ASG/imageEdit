@@ -1,12 +1,12 @@
 <!--  -->
 <template>
   <div class="image-edit">
-    <!-- <div>
+    <div>
       <img :src="base64Img" alt="" />
-    </div> -->
+    </div>
 
     <div class="contanier">
-      <div class="header clearfix">
+      <div id="picture-edit-header" class="header clearfix">
         <span @click="cancel" class="float-l btn-normal" id="picture_edit_cancel"> 取消 </span>
         <span v-show="G.editSteps && G.editSteps.length > 0" @click="save" class="float-r btn-normal" id="picture_edit_save">完成</span>
       </div>
@@ -110,39 +110,41 @@ export default {
   computed: {},
   watch: {},
   methods: {
-    initCanvas () {
-      const G = ped.pedGlobal
-      this.G = G
-
-      this.cw = `${G.device._width}`
-      // this.ch = `${Math.min(Math.floor(G.device._width * G.img._WH), G.device._height)}`
-      this.ch = `${G.device._height - 200 - 30}`
-
-      let w, h
-      var w1 = this.cw
-      var h1 = this.ch
-      var w2 = G.img._width
-      var h2 = G.img._height
-      if (w1 / h1 > w2 / h2) {
-        w = (w2 * h1) / h2
-        h = h1
-      } else {
-        h = (h2 * w1) / w2
-        w = w1
-      }
-      console.log(w, h)
-      this.w = w
-      this.h = h
-      // this.w = G.img._width;
-      // this.h = G.img._height - 200;
-    },
     init () {
       this.$nextTick(() => {
+        const G = ped.pedGlobal
+        this.G = G
+
+        // 动态计算canvas宽高
+        const bottomDom = document.getElementById('picture-edit-bottom')
+        const bottomHeight = bottomDom.offsetHeight
+        const headerDom = document.getElementById('picture-edit-header')
+        const headerHeight = headerDom.offsetHeight
+        this.cw = `${G.device._width}`
+        this.ch = `${G.device._height - bottomHeight - headerHeight}`
+
+        // 等比例缩放，设置宽高
+        let w, h
+        var w1 = this.cw
+        var h1 = this.ch
+        var w2 = G.img._width
+        var h2 = G.img._height
+        if (w1 / h1 > w2 / h2) {
+          w = (w2 * h1) / h2
+          h = h1
+        } else {
+          h = (h2 * w1) / w2
+          w = w1
+        }
+        console.log(w, h)
+        this.w = w
+        this.h = h
+
         const cnavasDom = document.getElementById('picture_edit_canvas')
         cnavasDom.width = this.w
         cnavasDom.height = this.h
-        console.log(cnavasDom)
 
+        // 加载图片，绑定事件
         this.instance.loadImg()
       })
     },
@@ -159,7 +161,6 @@ export default {
     },
     saveCb (res) {
       // this.base64Img = res
-      // // console.log('saveCb', res)
       this.wx.miniProgram.postMessage({
         data: {
           after: res
@@ -195,7 +196,7 @@ export default {
       // },
       loaded () {
         console.log('loaded')
-        that.initCanvas()
+        // that.initCanvas()
         that.init()
       }
     })
