@@ -114,7 +114,9 @@ export default {
       this.$nextTick(() => {
         const G = ped.pedGlobal
         this.G = G
-
+        const context = G.canvasContext
+        const ratio = this.getPixelRatio(context)
+        G.pixelRatio = ratio
         // 动态计算canvas宽高
         const bottomDom = document.getElementById('picture-edit-bottom')
         const bottomHeight = bottomDom.offsetHeight
@@ -122,7 +124,7 @@ export default {
         const headerHeight = headerDom.offsetHeight
         this.cw = `${G.device._width}`
         this.ch = `${G.device._height - bottomHeight - headerHeight}`
-
+        console.log('bottomHeight', bottomHeight)
         // 等比例缩放，设置宽高
         let w, h
         var w1 = this.cw
@@ -136,15 +138,22 @@ export default {
           h = (h2 * w1) / w2
           w = w1
         }
-        console.log(w, h)
         this.w = w
         this.h = h
 
         const cnavasDom = document.getElementById('picture_edit_canvas')
-        cnavasDom.width = this.w
-        cnavasDom.height = this.h
+        cnavasDom.width = this.w * ratio
+        cnavasDom.height = this.h * ratio
+        cnavasDom.style.width = this.w
+        cnavasDom.style.height = this.h
 
         // 加载图片，绑定事件
+        this.loadImg()
+      })
+    },
+
+    loadImg () {
+      this.$nextTick(() => {
         this.instance.loadImg()
       })
     },
@@ -175,6 +184,15 @@ export default {
       this.wx.miniProgram.navigateBack({
         delta: 1
       })
+    },
+    getPixelRatio (context) {
+      var backingStore = context.backingStorePixelRatio ||
+            context.webkitBackingStorePixelRatio ||
+            context.mozBackingStorePixelRatio ||
+            context.msBackingStorePixelRatio ||
+            context.oBackingStorePixelRatio ||
+            context.backingStorePixelRatio || 1
+      return (window.devicePixelRatio || 1) / backingStore
     }
   },
   created () {},
@@ -184,7 +202,8 @@ export default {
     this.actionList = util.action
     const that = this
     const instance = new ped.ImageInfo({
-      //   url: 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=1729868871,2742990556&fm=26&gp=0.jpg',
+      // url: 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=1729868871,2742990556&fm=26&gp=0.jpg',
+      // url: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fn.sinaimg.cn%2Fsinacn%2Fw552h639%2F20180117%2Fc90e-fyqtwzt9369182.jpg&refer=http%3A%2F%2Fn.sinaimg.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1627286417&t=299d58716cbf5dadc0602e8971a386af',
       // url: 'https://img2.baidu.com/it/u=3143062240,797042467&fm=26&fmt=auto&gp=0.jpg',
       url: imageSrc,
       // saveFn (res) {
