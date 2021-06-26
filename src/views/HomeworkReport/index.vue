@@ -22,7 +22,7 @@
         <div class="homework-answer">
           <div class="homework-time">
             <div class="homework-time-title">提交作业时间</div>
-            <div class="homework-time-text">2020-03-03 18:09:09</div>
+            <div class="homework-time-text">{{homeworkCorrection.submitTime}}</div>
           </div>
           <div
             class="homework-choice"
