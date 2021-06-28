@@ -88,7 +88,7 @@
             (homeworkCorrection.correctionPics &&
               homeworkCorrection.correctionPics.length) ||
               homeworkCorrection.wrongNumber ||
-              homeworkCorrection.feedback
+              homeworkCorrection.comment
           "
         >
           <img
