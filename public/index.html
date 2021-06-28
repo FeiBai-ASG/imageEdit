@@ -12,6 +12,29 @@
 </head>
 
 <body>
+  <script>
+    window.onload = function () {
+      var lastTouchEnd = 0;
+      document.addEventListener('touchstart', function (event) {
+        if (event.touches.length > 1) {
+          event.preventDefault();
+        }
+      });
+      document.addEventListener('touchend', function (event) {
+        var now = (new Date()).getTime();
+        if (now - lastTouchEnd <= 300) {
+          event.preventDefault();
+        }
+        lastTouchEnd = now;
+      }, false);
+      document.addEventListener('gesturestart', function (event) {
+        event.preventDefault();
+      });
+      document.addEventListener('dblclick', function (event) {
+        event.preventDefault();
+      })
+    }
+  </script>
   <noscript>
     <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled.
         Please enable it to continue.</strong>
@@ -19,28 +42,5 @@
   <div id="app"></div>
   <!-- built files will be auto injected -->
 </body>
-<script>
-  window.onload = function () {
-    var lastTouchEnd = 0;
-    document.addEventListener('touchstart', function (event) {
-      if (event.touches.length > 1) {
-        event.preventDefault();
-      }
-    });
-    document.addEventListener('touchend', function (event) {
-      var now = (new Date()).getTime();
-      if (now - lastTouchEnd <= 300) {
-        event.preventDefault();
-      }
-      lastTouchEnd = now;
-    }, false);
-    document.addEventListener('gesturestart', function (event) {
-      event.preventDefault();
-    });
-    document.addEventListener('dblclick', function (event) {
-      event.preventDefault();
-    })
-  }
-</script>
 
 </html>
