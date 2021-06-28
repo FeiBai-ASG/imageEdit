@@ -568,7 +568,7 @@ export default {
           height: 92px;
           border-radius: 92px;
           background: #edf6fd;
-          margin-right: 20px;
+          margin-right: 16px;
         }
         &-name {
           font-size: 28px;
@@ -629,6 +629,7 @@ export default {
   }
 }
 .button {
+  margin-top: 22px;
   width: 600px;
   height: 88px;
   background: #5e4cf9;
