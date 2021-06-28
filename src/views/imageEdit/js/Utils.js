@@ -102,7 +102,6 @@ function addTextEvent () {
     const fontSize = 15
     const textAll = textArray.join('')
     if (textAll && textArray.length > 0) {
-      G.inputArray.push({ array: textArray, color: G.currentColor })
       if (G.textOperateIndex === 0) {
         let textDom = `<div 
         style="position: absolute;
@@ -130,6 +129,10 @@ function addTextEvent () {
         let dom = createNode(textDom)
 
         if (G.currentTextBox) {
+          const find = G.inputArray.find(item => item.id === G.currentTextBoxIdInInputArray)
+          if (find) {
+            find.array = textArray
+          }
           G.currentTextBox.innerHTML = ''
           G.currentTextBox.appendChild(dom.childNodes[1].cloneNode(true))
           dom = G.currentTextBox
@@ -142,11 +145,13 @@ function addTextEvent () {
           dom.style.top = (G.boxSize._height - domHeight) / 2 + G.canvasGrandDom.scrollTop - parseFloat(G.canvasGrandDom.style.paddingTop || 0) + 'px'
           dom.style.left = (G.boxSize._width - domWidth) / 2 + G.canvasGrandDom.scrollLeft - parseFloat(G.canvasGrandDom.style.paddingLeft || 0) + 'px'
           G.inputDomArray.push(dom)
+          G.inputArray.push({ array: textArray, color: G.currentColor, id: G.textInputId++ })
+
           // addDragMoveEvent(dom)
           G.editSteps.push({ type: 'dom', dom, color: G.currentColor })
         }
         addTextMoveEvent(dom)
-        addTextClickEvent(dom)
+        addTextClickEvent(dom, G.textInputId - 1)
         addDeleteEvent(dom)
       }
       G.textIndex++
@@ -190,7 +195,7 @@ function addDeleteEvent (dom) {
   }, false)
 }
 
-function addTextClickEvent (dom) {
+function addTextClickEvent (dom, id) {
   let div
   for (let i = 0; i < dom.childNodes.length; i++) {
     if (dom.childNodes[i].nodeName === 'DIV') {
@@ -218,6 +223,8 @@ function addTextClickEvent (dom) {
 
     G.textInput.focus()
     G.currentTextBox = dom
+    G.currentTextBoxIdInInputArray = id
+    console.log('id:', id)
     resetOperateOne()
   })
 }

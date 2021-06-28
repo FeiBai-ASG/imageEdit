@@ -33,7 +33,9 @@ export const pedGlobal = {
   editSteps: [],
   lineWidth: 5,
   currentTextBox: null,
-  pixelRatio: 1
+  pixelRatio: 1,
+  textInputId: 0,
+  currentTextBoxIdInInputArray: 0
 }
 
 export function changeOperate (type) {
