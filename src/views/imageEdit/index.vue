@@ -6,7 +6,7 @@
     </div>
 
     <div class="contanier">
-      <div id="picture-edit-header" class="header clearfix">
+      <div id="picture-edit-header" class="clearfix header">
         <span @click="cancel" class="float-l btn-normal" id="picture_edit_cancel"> 取消 </span>
         <span v-show="G.editSteps && G.editSteps.length > 0" @click="save" class="float-r btn-normal" id="picture_edit_save">完成</span>
       </div>

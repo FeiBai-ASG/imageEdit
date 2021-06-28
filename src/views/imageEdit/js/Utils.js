@@ -45,8 +45,11 @@ function addScaleEvent (dom) {
     if (e.touches.length === 2) {
       e.preventDefault()
       resetOperateOne()
+
       const oldType = G.operateType
       G.operateType = 0
+
+      console.log('oldType', oldType)
       scale = getScaleNum(doubleStartTouche, e.touches)
       doubleStartTouche = e.touches
       const oldWidth = parseFloat(dom.style.width)
@@ -67,9 +70,11 @@ function addScaleEvent (dom) {
           item.style.left = (parseFloat(item.style.left) / oldWidth * newWidth).toFixed(4) + 'px'
         })
       }
-      setTimeout(() => {
-        G.operateType = oldType
-      }, 200)
+      if (oldType === 1) {
+        setTimeout(() => {
+          changeOperate(oldType)
+        }, 500)
+      }
     } else if (e.touches.length === 1) {
       if (G.operateType === 1) {
         e.preventDefault()
@@ -77,13 +82,14 @@ function addScaleEvent (dom) {
         context.strokeStyle = G.currentColor
         const x = parseFloat((e.touches[0].pageX - boxOffsetLeft - document.body.scrollLeft + G.canvasGrandDom.scrollLeft - padding) * scaleStyle)
         const y = parseFloat((e.touches[0].pageY - boxOffsetTop - document.body.scrollTop + G.canvasGrandDom.scrollTop) * scaleStyle)
-
-        context.lineTo(x, y)
-        context.stroke()
-        // 记录初始的滑动位置
-        setSingleCoordinate(singleStartTouche, e)
-        const historyLength = G.paintingArray.length - 1
-        G.paintingArray[historyLength].moves.push({ x, y, color: G.currentColor })
+        if (G.operateType === 1) {
+          context.lineTo(x, y)
+          context.stroke()
+          // 记录初始的滑动位置
+          setSingleCoordinate(singleStartTouche, e)
+          const historyLength = G.paintingArray.length - 1
+          G.paintingArray[historyLength].moves.push({ x, y, color: G.currentColor })
+        }
       }
     }
   }, { passive: false })
@@ -271,7 +277,7 @@ function diffTypeAction (type) {
   changeOperate(type)
 
   if (type === 1) {
-
+    G.isDrawing = true
   } else if (type === 2) {
     G.textBox.style.display = 'block'
     G.textInput.style.display = 'inline-block'

@@ -2,6 +2,7 @@
 // const proxy = require('http-proxy-middleware');
 
 const postcssPxtorem = require('postcss-pxtorem')
+const vConsolePlugin = require('vconsole-webpack-plugin')
 
 module.exports = {
   publicPath: './',
@@ -61,5 +62,20 @@ module.exports = {
     }
   },
 
-  productionSourceMap: false
+  productionSourceMap: false,
+
+  configureWebpack: config => {
+    // 生产环境去掉vconsole调试器
+    const envType = process.env.NODE_ENV !== 'production'
+    const pluginsDev = [
+      // eslint-disable-next-line new-cap
+      new vConsolePlugin({
+        filter: [],
+        enable: envType
+      })
+    ]
+
+    config.plugins = [...config.plugins, ...pluginsDev]
+  }
+
 }
