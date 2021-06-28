@@ -104,7 +104,8 @@ export default {
       actionList: [],
       G: {
         currentColor: 'red'
-      }
+      },
+      studentName: 'zzz'
     }
   },
   computed: {},
@@ -198,7 +199,8 @@ export default {
   created () {},
   mounted () {
     const imageSrc = this.Base64.decode(this.$route.query.src)
-    // console.log(imageSrc)
+    const name = this.$route.query.name
+    document.title = `${name}作业报告`
     this.actionList = util.action
     const that = this
     const instance = new ped.ImageInfo({
