@@ -230,11 +230,11 @@ function addTextClickEvent (dom, id) {
 }
 
 function resetOperateOne () {
-//   const operate = [...document.querySelectorAll('.picture-operate')][0]
-//   if (operate.style.color === 'rgb(69, 148, 248)') {
-//     operate.firstChild.src = './src/assets/image/painting.png'
-//     operate.style.color = 'white'
-//   }
+  //   const operate = [...document.querySelectorAll('.picture-operate')][0]
+  //   if (operate.style.color === 'rgb(69, 148, 248)') {
+  //     operate.firstChild.src = './src/assets/image/painting.png'
+  //     operate.style.color = 'white'
+  //   }
 }
 
 function addOperateEvent () {
@@ -523,7 +523,7 @@ function addSaveEvent (dom, cxt, saveFn) {
 }
 
 function saveImage (saveFn) {
-// const dom = document.getElementById('picture_edit_save')
+  // const dom = document.getElementById('picture_edit_save')
   const cxt = G.canvasContext
   const array = G.inputArray
 
@@ -537,8 +537,8 @@ function saveImage (saveFn) {
       const item = G.inputDomArray[i]
       const textScale = getTextScale(item)
       // const domLeft = parseFloat(item.style.left) - padding
-      const domLeft = parseFloat(item.style.left) * scaleStyle + 26
-      const domTop = parseFloat(item.style.top) * scaleStyle + 12
+      const domLeft = parseFloat(item.style.left) * scaleStyle + (26 + 1) * scaleStyle
+      const domTop = parseFloat(item.style.top) * scaleStyle + (12 + 1) * scaleStyle
       // let frontSize = parseFloat(item.style.fontSize) / parseFloat(G.canvas.style.height) * G.img._height
       let fontSize = parseFloat(item.style.fontSize)
       fontSize *= textScale * scaleStyle
@@ -549,7 +549,7 @@ function saveImage (saveFn) {
         cxt.fillStyle = array[i].color
         cxt.font = `${fontSize}px helvetica`
         // +5是为了修复paddingLeft     *1.4是为了修复line-height
-        cxt.fillText(array[i].array[j], (domLeft + 5), domTop + ((j) * (parseFloat(item.style.fontSize) * textScale * 1.4)) + fontSize)
+        cxt.fillText(array[i].array[j], (domLeft + 5), domTop + ((j) * (parseFloat(fontSize) * textScale * 1.4)) + fontSize)
         //   cxt.fillText(array[i][j], 0, fontSize)
       }
     }
