@@ -111,8 +111,8 @@
               <div
                 class="review-image"
                 v-if="
-                  homeworkCorrection.revisionPics &&
-                    homeworkCorrection.revisionPics.length
+                  homeworkCorrection.correctionPics &&
+                    homeworkCorrection.correctionPics.length
                 "
                 v-viewer
               >
