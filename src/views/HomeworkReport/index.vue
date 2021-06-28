@@ -618,7 +618,6 @@ export default {
 .correct {
   margin-top: 28px;
   &-title {
-    width: 128px;
     height: 44px;
     font-size: 32px;
     font-weight: 500;
