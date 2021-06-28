@@ -527,19 +527,21 @@ function saveImage (saveFn) {
   const cxt = G.canvasContext
   const array = G.inputArray
 
-  const padding = getCanvasPadding()
+  const canvasDom = document.getElementById('picture_edit_canvas')
+
+  scaleStyle = (canvasDom.width / parseFloat(canvasDom.style.width)).toFixed(4)
+
+  // const padding = getCanvasPadding()
   if (array.length > 0) {
     for (let i = 0; i < array.length; i++) {
       const item = G.inputDomArray[i]
       const textScale = getTextScale(item)
       // const domLeft = parseFloat(item.style.left) - padding
-      const domLeft = parseFloat(item.style.left) - padding
-
-      const domTop = parseFloat(item.style.top)
+      const domLeft = parseFloat(item.style.left) * scaleStyle + 26
+      const domTop = parseFloat(item.style.top) * scaleStyle + 12
       // let frontSize = parseFloat(item.style.fontSize) / parseFloat(G.canvas.style.height) * G.img._height
       let fontSize = parseFloat(item.style.fontSize)
-
-      fontSize *= textScale
+      fontSize *= textScale * scaleStyle
       // drawRoundedRect(cxt, domLeft * scaleStyle, domTop, parseFloat(item.offsetWidth) * scaleStyle, parseFloat(item.offsetHeight) * scaleStyle, 5 * scaleStyle, true, false)
       cxt.fillStyle = 'white'
       cxt.fill()
@@ -547,7 +549,7 @@ function saveImage (saveFn) {
         cxt.fillStyle = array[i].color
         cxt.font = `${fontSize}px helvetica`
         // +5是为了修复paddingLeft     *1.4是为了修复line-height
-        cxt.fillText(array[i].array[j], (domLeft + 5) * scaleStyle, domTop + ((j) * (parseFloat(item.style.fontSize) * textScale * 1.4)) * scaleStyle + fontSize)
+        cxt.fillText(array[i].array[j], (domLeft + 5), domTop + ((j) * (parseFloat(item.style.fontSize) * textScale * 1.4)) + fontSize)
         //   cxt.fillText(array[i][j], 0, fontSize)
       }
     }
