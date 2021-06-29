@@ -22,7 +22,9 @@
         <div class="homework-answer">
           <div class="homework-time">
             <div class="homework-time-title">提交作业时间</div>
-            <div class="homework-time-text">{{homeworkCorrection.submitTime}}</div>
+            <div class="homework-time-text">
+              {{ homeworkCorrection.submitTime }}
+            </div>
           </div>
           <div
             class="homework-choice"
@@ -88,6 +90,7 @@
             (homeworkCorrection.correctionPics &&
               homeworkCorrection.correctionPics.length) ||
               homeworkCorrection.wrongNumber ||
+              homeworkCorrection.nonChoiceWrongNumber ||
               homeworkCorrection.comment
           "
         >
@@ -102,7 +105,13 @@
               <div class="teacher-name">{{ teacherInfo.name }}老师</div>
             </div>
             <div class="review">
-              <div class="need-correct" v-if="homeworkCorrection.wrongNumber">
+              <div
+                class="need-correct"
+                v-if="
+                  homeworkCorrection.wrongNumber ||
+                    homeworkCorrection.nonChoiceWrongNumber
+                "
+              >
                 需要订正
               </div>
               <div class="review-text" v-if="homeworkCorrection.comment">
@@ -352,6 +361,9 @@ export default {
           homeworkCorrection.wrongNumber =
             homeworkCorrection.choiceQuestion.length -
             homeworkCorrection.rightNumber
+          homeworkCorrection.nonChoiceWrongNumber = homeworkCorrection.nonChoiceQuestion.filter(
+            answerInfo => !Number(answerInfo.isCorrect)
+          ).length
           this.homeworkCorrection = homeworkCorrection
 
           console.log(homeworkCorrection)
@@ -568,7 +580,7 @@ export default {
           height: 92px;
           border-radius: 92px;
           background: #edf6fd;
-          margin-right: 16px;
+          margin-right: 12px;
         }
         &-name {
           font-size: 28px;
