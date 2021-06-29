@@ -77,6 +77,7 @@ function addScaleEvent (dom) {
       }
     } else if (e.touches.length === 1) {
       if (G.operateType === 1) {
+        context.save()
         e.preventDefault()
         const padding = getCanvasPadding()
         context.strokeStyle = G.currentColor
@@ -90,6 +91,7 @@ function addScaleEvent (dom) {
           const historyLength = G.paintingArray.length - 1
           G.paintingArray[historyLength].moves.push({ x, y, color: G.currentColor })
         }
+        context.restore()
       }
     }
   }, { passive: false })
@@ -304,6 +306,12 @@ function diffTypeAction (type) {
 
       const step = G.editSteps.pop()
       if (step.type === 'dom') {
+        const findInDomArray = G.inputDomArray.findIndex(item => item === step.dom)
+        if (findInDomArray > -1) {
+          G.inputDomArray.splice(findInDomArray, 1)
+          G.inputArray.splice(findInDomArray, 1)
+        }
+
         step.dom.remove()
       } else {
         G.paintingArray.pop()
@@ -530,10 +538,10 @@ function saveImage (saveFn) {
   const canvasDom = document.getElementById('picture_edit_canvas')
 
   scaleStyle = (canvasDom.width / parseFloat(canvasDom.style.width)).toFixed(4)
-
   // const padding = getCanvasPadding()
   if (array.length > 0) {
     for (let i = 0; i < array.length; i++) {
+      cxt.save()
       const item = G.inputDomArray[i]
       const textScale = getTextScale(item)
       // const domLeft = parseFloat(item.style.left) - padding
@@ -543,8 +551,8 @@ function saveImage (saveFn) {
       let fontSize = parseFloat(item.style.fontSize)
       fontSize *= textScale * scaleStyle
       // drawRoundedRect(cxt, domLeft * scaleStyle, domTop, parseFloat(item.offsetWidth) * scaleStyle, parseFloat(item.offsetHeight) * scaleStyle, 5 * scaleStyle, true, false)
-      cxt.fillStyle = 'white'
-      cxt.fill()
+      // cxt.fillStyle = 'red'
+      // cxt.fill()
       for (let j = 0; j < array[i].array.length; j++) {
         cxt.fillStyle = array[i].color
         cxt.font = `${fontSize}px helvetica`
@@ -552,10 +560,12 @@ function saveImage (saveFn) {
         cxt.fillText(array[i].array[j], (domLeft + 5), domTop + ((j) * (parseFloat(fontSize) * textScale * 1.4)) + fontSize)
         //   cxt.fillText(array[i][j], 0, fontSize)
       }
+      cxt.restore()
     }
     // 画完后移除dom元素
     clearInputDom()
   }
+
   const dataUrl = G.canvas.toDataURL()
   saveFn(dataUrl)
   G.pictureEditBox.style.display = 'none'
