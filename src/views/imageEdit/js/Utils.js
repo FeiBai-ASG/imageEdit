@@ -102,7 +102,6 @@ function addTextEvent () {
     const fontSize = 15
     const textAll = textArray.join('')
     if (textAll && textArray.length > 0) {
-      G.inputArray.push({ array: textArray, color: G.currentColor })
       if (G.textOperateIndex === 0) {
         let textDom = `<div 
         style="position: absolute;
@@ -130,6 +129,10 @@ function addTextEvent () {
         let dom = createNode(textDom)
 
         if (G.currentTextBox) {
+          const find = G.inputArray.find(item => item.id === G.currentTextBoxIdInInputArray)
+          if (find) {
+            find.array = textArray
+          }
           G.currentTextBox.innerHTML = ''
           G.currentTextBox.appendChild(dom.childNodes[1].cloneNode(true))
           dom = G.currentTextBox
@@ -142,11 +145,13 @@ function addTextEvent () {
           dom.style.top = (G.boxSize._height - domHeight) / 2 + G.canvasGrandDom.scrollTop - parseFloat(G.canvasGrandDom.style.paddingTop || 0) + 'px'
           dom.style.left = (G.boxSize._width - domWidth) / 2 + G.canvasGrandDom.scrollLeft - parseFloat(G.canvasGrandDom.style.paddingLeft || 0) + 'px'
           G.inputDomArray.push(dom)
+          G.inputArray.push({ array: textArray, color: G.currentColor, id: G.textInputId++ })
+
           // addDragMoveEvent(dom)
           G.editSteps.push({ type: 'dom', dom, color: G.currentColor })
         }
         addTextMoveEvent(dom)
-        addTextClickEvent(dom)
+        addTextClickEvent(dom, G.textInputId - 1)
         addDeleteEvent(dom)
       }
       G.textIndex++
@@ -190,7 +195,7 @@ function addDeleteEvent (dom) {
   }, false)
 }
 
-function addTextClickEvent (dom) {
+function addTextClickEvent (dom, id) {
   let div
   for (let i = 0; i < dom.childNodes.length; i++) {
     if (dom.childNodes[i].nodeName === 'DIV') {
@@ -218,16 +223,18 @@ function addTextClickEvent (dom) {
 
     G.textInput.focus()
     G.currentTextBox = dom
+    G.currentTextBoxIdInInputArray = id
+    console.log('id:', id)
     resetOperateOne()
   })
 }
 
 function resetOperateOne () {
-//   const operate = [...document.querySelectorAll('.picture-operate')][0]
-//   if (operate.style.color === 'rgb(69, 148, 248)') {
-//     operate.firstChild.src = './src/assets/image/painting.png'
-//     operate.style.color = 'white'
-//   }
+  //   const operate = [...document.querySelectorAll('.picture-operate')][0]
+  //   if (operate.style.color === 'rgb(69, 148, 248)') {
+  //     operate.firstChild.src = './src/assets/image/painting.png'
+  //     operate.style.color = 'white'
+  //   }
 }
 
 function addOperateEvent () {
@@ -516,23 +523,25 @@ function addSaveEvent (dom, cxt, saveFn) {
 }
 
 function saveImage (saveFn) {
-// const dom = document.getElementById('picture_edit_save')
+  // const dom = document.getElementById('picture_edit_save')
   const cxt = G.canvasContext
   const array = G.inputArray
 
-  const padding = getCanvasPadding()
+  const canvasDom = document.getElementById('picture_edit_canvas')
+
+  scaleStyle = (canvasDom.width / parseFloat(canvasDom.style.width)).toFixed(4)
+
+  // const padding = getCanvasPadding()
   if (array.length > 0) {
     for (let i = 0; i < array.length; i++) {
       const item = G.inputDomArray[i]
       const textScale = getTextScale(item)
       // const domLeft = parseFloat(item.style.left) - padding
-      const domLeft = parseFloat(item.style.left) - padding
-
-      const domTop = parseFloat(item.style.top)
+      const domLeft = parseFloat(item.style.left) * scaleStyle + (26 + 1) * scaleStyle
+      const domTop = parseFloat(item.style.top) * scaleStyle + (12 + 1) * scaleStyle
       // let frontSize = parseFloat(item.style.fontSize) / parseFloat(G.canvas.style.height) * G.img._height
       let fontSize = parseFloat(item.style.fontSize)
-
-      fontSize *= textScale
+      fontSize *= textScale * scaleStyle
       // drawRoundedRect(cxt, domLeft * scaleStyle, domTop, parseFloat(item.offsetWidth) * scaleStyle, parseFloat(item.offsetHeight) * scaleStyle, 5 * scaleStyle, true, false)
       cxt.fillStyle = 'white'
       cxt.fill()
@@ -540,7 +549,7 @@ function saveImage (saveFn) {
         cxt.fillStyle = array[i].color
         cxt.font = `${fontSize}px helvetica`
         // +5是为了修复paddingLeft     *1.4是为了修复line-height
-        cxt.fillText(array[i].array[j], (domLeft + 5) * scaleStyle, domTop + ((j) * (parseFloat(item.style.fontSize) * textScale * 1.4)) * scaleStyle + fontSize)
+        cxt.fillText(array[i].array[j], (domLeft + 5), domTop + ((j) * (parseFloat(fontSize) * textScale * 1.4)) + fontSize)
         //   cxt.fillText(array[i][j], 0, fontSize)
       }
     }

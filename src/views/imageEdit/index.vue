@@ -104,7 +104,8 @@ export default {
       actionList: [],
       G: {
         currentColor: 'red'
-      }
+      },
+      studentName: 'zzz'
     }
   },
   computed: {},
@@ -198,7 +199,8 @@ export default {
   created () {},
   mounted () {
     const imageSrc = this.Base64.decode(this.$route.query.src)
-    // console.log(imageSrc)
+    const name = this.$route.query.name
+    document.title = `${name}作业报告`
     this.actionList = util.action
     const that = this
     const instance = new ped.ImageInfo({
@@ -206,13 +208,6 @@ export default {
       // url: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fn.sinaimg.cn%2Fsinacn%2Fw552h639%2F20180117%2Fc90e-fyqtwzt9369182.jpg&refer=http%3A%2F%2Fn.sinaimg.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1627286417&t=299d58716cbf5dadc0602e8971a386af',
       // url: 'https://img2.baidu.com/it/u=3143062240,797042467&fm=26&fmt=auto&gp=0.jpg',
       url: imageSrc,
-      // saveFn (res) {
-      //   console.log('save')
-      //   console.log(res)
-      //   console.log(that.wx)
-
-      //   that.base64Img = res
-      // },
       loaded () {
         console.log('loaded')
         // that.initCanvas()
